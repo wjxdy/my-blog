@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xulei.myblogbackend.mapper.AdMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xulei.myblogbackend.entity.Ad">
+        <id column="ad_id" property="adId" />
+        <result column="ad_type_id" property="adTypeId" />
+        <result column="ad_title" property="adTitle" />
+        <result column="ad_url" property="adUrl" />
+        <result column="ad_sort" property="adSort" />
+        <result column="ad_begin_time" property="adBeginTime" />
+        <result column="ad_end_time" property="adEndTime" />
+        <result column="ad_add_time" property="adAddTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ad_id, ad_type_id, ad_title, ad_url, ad_sort, ad_begin_time, ad_end_time, ad_add_time
+    </sql>
+
+</mapper>

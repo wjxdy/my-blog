@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: My-Blog-Backend
+
+# DataSource Config
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/library?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root  # ??????
+    password: Xulei20040831  # ?????
+
+
+# MyBatis-Plus Config
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  # ???????
+  type-aliases-package: com.xulei.myblogbackend.entity
+  global-config:
+    db-config:
+      id-type: AUTO
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
