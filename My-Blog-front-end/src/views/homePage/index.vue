@@ -13,14 +13,17 @@
     max-height: 150px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
+    margin: 0 auto 15px;
+    /* 关键：左右auto实现居中，保留底部margin */
     transition: transform 0.2s;
-    /* 增加悬停缩放效果 */
 }
 
-/* 鼠标悬停在博客项上时轻微上浮，增强交互感 */
+/* 可以保留悬停效果，增强交互体验 */
 .blog-item:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    /* 悬停时轻微上浮 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    /* 悬停时阴影加深 */
 }
 
 /* 核心：修改标题链接样式，去除下划线并优化外观 */
@@ -137,7 +140,6 @@ const getArticlePage = async () => {
         pageInfo.value.pageTotal = result.data.pageTotal
         console.log(ArticleList.value);
 
-        ElMessage.success("文章列表查询成功")
 
     } else {
 

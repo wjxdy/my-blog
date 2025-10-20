@@ -23,7 +23,7 @@ const router = createRouter({
           component: blogTestView // 对应组件
         },
         {
-          path: '/ArticleEdit',
+          path: 'ArticleEdit/:articleId?',
           name: 'ArticleEdit',
           component: blogEditView,
 

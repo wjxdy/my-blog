@@ -16,6 +16,9 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0', // 允许所有IP访问
+    port: 5173, // 默认端口，可自定义
+    open: false, // 可选，是否自动打开浏览器
     proxy: {
       '/api': {
         target: 'http://localhost:8080',

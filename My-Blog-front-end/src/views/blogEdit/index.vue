@@ -48,7 +48,7 @@
                 <template #footer>
                     <div class="dialog-footer">
                         <el-button @click="dialogVisible = false">取消</el-button>
-                        <el-button type="primary" @click="addArticle()">
+                        <el-button type="primary" @click="handleSubmit ()">
                             确认
                         </el-button>
                     </div>
@@ -60,14 +60,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { MdEditor } from 'md-editor-v3';
-import { addArticleApi } from "@/api/article";
+import { addArticleApi,updateArticleApi,getArticleApi } from "@/api/article";
 import 'md-editor-v3/lib/style.css';
 import { ElMessage } from 'element-plus';
-import { useRouter } from 'vue-router';
+import { useRouter,useRoute } from 'vue-router';
 
-const router=useRouter()
+const router = useRouter()
+const route = useRoute()
+
 
 const dialogVisible = ref(false)
 
@@ -83,32 +85,52 @@ const article = ref({
     articleCollectionNumber: 0
 
 })
-const addArticle = async () => {
-    // 实际项目中替换为：await axios.get(`/api/articles/${id}`)
-    const result = await addArticleApi(article.value)
+const articleId = route.params.articleId
 
-    if (result.code == 200) {
-        console.log(result);
-        dialogVisible.value = false
-        ElMessage.success("添加成功")
-        article.value = {
-            // 重置为初始状态
-            articleId: "",
-            readerUsername: "",
-            articleTitle: "",
-            articleIntro: "",
-            articleAddTime: "",
-            articleContext: "",
-            articleGoodNumber: 0,
-            articleLookNumber: 0,
-            articleCollectionNumber: 0
+
+
+// 根据是否有articleId判断是新增还是编辑
+const handleSubmit = async () => {
+    try {
+        let result;
+        if (articleId) {
+            // 编辑现有文章
+            result = await updateArticleApi(article.value)
+        } else {
+            // 新增文章
+            result = await addArticleApi(article.value)
         }
-        router.push('/homePage')
-    } else {
-        ElMessage.error("添加失败")
+
+        if (result.code == 200) {
+            dialogVisible.value = false
+            ElMessage.success(articleId ? "更新成功" : "添加成功")
+            router.push('/homePage')
+        } else {
+            ElMessage.error(articleId ? "更新失败" : "添加失败")
+        }
+    } catch (error) {
+        ElMessage.error("操作失败，请稍后重试")
+        console.error(error)
     }
 }
 
 
+onMounted(async () => {
+    // 如果有articleId，加载文章数据（编辑场景）
+    if (articleId) {
+        try {
+            const result = await getArticleApi(articleId as string)
+            console.log("文章回显结果------",result)
+            if (result.code == 200) {
+                article.value = result.data
+            } else {
+                ElMessage.error("加载文章失败")
+            }
+        } catch (error) {
+            ElMessage.error("加载文章时发生错误")
+            console.error(error)
+        }
+    }
+})
 
 </script>

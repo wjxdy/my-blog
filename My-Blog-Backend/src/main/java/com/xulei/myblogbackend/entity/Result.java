@@ -33,6 +33,13 @@ public class Result<T> {
 
         return result;
     }
+    public static Result fail(String message){
+        Result result = new Result();
+        result.setMessage(message);
+        result.setCode("500");
+        result.setData(null);
+        return result;
+    }
 
 
 }

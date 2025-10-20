@@ -1,12 +1,12 @@
 package com.xulei.myblogbackend.controller;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xulei.myblogbackend.dto.PageInfoDto;
 import com.xulei.myblogbackend.entity.Article;
 import com.xulei.myblogbackend.entity.Result;
 import com.xulei.myblogbackend.service.ArticleService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +17,25 @@ import java.util.List;
 public class ArticleController {
     @Autowired
     private ArticleService articleService;
+
+
+    @DeleteMapping("/deleteArticle/{articleId}")
+    public Result deleteArticleById(@PathVariable String articleId){
+
+        try {
+            articleService.removeById(articleId);
+
+            return Result.ok();
+
+        } catch (Exception e) {
+
+            return Result.fail("删除失败");
+
+        }
+
+
+
+    }
 
     @GetMapping
     public Result<List<Article>> getArticleList(){
@@ -29,7 +48,7 @@ public class ArticleController {
     }
     @PostMapping("/list")
     public Result<PageInfoDto<List<Article>>> getArticlePage(@RequestBody PageInfoDto pageInfoDto){
-        PageHelper.startPage(pageInfoDto.getCurrentPage(), pageInfoDto.getPageSize());
+        PageHelper.startPage(pageInfoDto.getCurrentPage(), pageInfoDto.getPageSize(),"article_add_time DESC");
 
 
         List<Article> list = articleService.list();
@@ -55,6 +74,18 @@ public class ArticleController {
 
         articleService.save(article);
 
+        return Result.ok();
+    }
+    @PutMapping("/updateArticle")
+    public Result updateArticle(@RequestBody Article article){
+        LambdaUpdateWrapper<Article> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Article::getArticleId,article.getArticleId())
+                        .set(!article.getArticleContext().isEmpty(),Article::getArticleContext,article.getArticleContext())
+                        .set(Article::getArticleIntro,article.getArticleIntro())
+                        .set(Article::getArticleUpdateTime,LocalDateTime.now())
+                        .set(!article.getArticleTitle().isEmpty(),Article::getArticleTitle,article.getArticleTitle());
+
+        articleService.update(updateWrapper);
         return Result.ok();
     }
 

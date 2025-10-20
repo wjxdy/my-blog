@@ -54,6 +54,13 @@ public class Article implements Serializable {
     private String articleIntro;
 
     /**
+     * 文章修改时间
+     */
+    @ApiModelProperty("文章修改时间")
+    private LocalDateTime articleUpdateTime;
+
+
+    /**
      * 文章添加时间
      */
     @ApiModelProperty("文章添加时间")
