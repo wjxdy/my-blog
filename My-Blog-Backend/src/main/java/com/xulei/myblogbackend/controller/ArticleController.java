@@ -70,7 +70,7 @@ public class ArticleController {
     public Result addArticle(@RequestBody Article article){
 
         article.setArticleAddTime(LocalDateTime.now());
-        article.setReaderUsername("test01");
+        article.setUsername("test01");
 
         articleService.save(article);
 

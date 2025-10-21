@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="com.xulei.myblogbackend.entity.Comment">
         <id column="comment_id" property="commentId" />
         <result column="article_id" property="articleId" />
-        <result column="reader_username" property="readerUsername" />
+        <result column="reader_username" property="username" />
         <result column="comment_time" property="commentTime" />
         <result column="comment_good_number" property="commentGoodNumber" />
     </resultMap>

@@ -40,7 +40,7 @@ public class Article implements Serializable {
      * 对应用户的username
      */
     @ApiModelProperty("对应用户的username")
-    private String readerUsername;
+    private String username;
 
     /**
      * 文章标题

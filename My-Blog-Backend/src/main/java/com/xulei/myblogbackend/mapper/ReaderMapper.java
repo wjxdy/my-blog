@@ -1,7 +1,7 @@
 package com.xulei.myblogbackend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.xulei.myblogbackend.entity.Reader;
+import com.xulei.myblogbackend.entity.User;
 
 /**
  * <p>
@@ -11,6 +11,6 @@ import com.xulei.myblogbackend.entity.Reader;
  * @author xulei
  * @since 2025-10-10
  */
-public interface ReaderMapper extends BaseMapper<Reader> {
+public interface ReaderMapper extends BaseMapper<User> {
 
 }

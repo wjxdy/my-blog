@@ -10,3 +10,15 @@ export const useCounterStore = defineStore('counter', () => {
 
   return { count, doubleCount, increment }
 })
+export const useUserInfoStore = defineStore('userInfo', {
+    state: () => ({
+        // 定义需要绑定的变量
+        loginData: {
+            sex:'',
+            id: '',
+            name:'',
+            token:'',
+            username:''
+        }, //登录信息
+    })
+})    

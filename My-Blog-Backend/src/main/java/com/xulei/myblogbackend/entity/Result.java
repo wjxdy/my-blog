@@ -33,6 +33,26 @@ public class Result<T> {
 
         return result;
     }
+    public static Result ok(String message){
+
+        Result result = new Result();
+        result.setMessage(message);
+        result.setCode("200");
+        result.setData(null);
+
+        return result;
+    }
+
+
+
+    public static Result fail(){
+        Result result = new Result();
+        result.setMessage("请求失败");
+        result.setCode("500");
+        result.setData(null);
+        return result;
+    }
+
     public static Result fail(String message){
         Result result = new Result();
         result.setMessage(message);

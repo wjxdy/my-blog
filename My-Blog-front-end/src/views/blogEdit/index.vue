@@ -75,14 +75,14 @@ const dialogVisible = ref(false)
 
 const article = ref({
     articleId: "",
-    readerUsername: "",
+    username: "",
     articleTitle: "",
     articleIntro: "",
     articleAddTime: "",
     articleContext: "",
-    articleGoodNumber: 0,
-    articleLookNumber: 0,
-    articleCollectionNumber: 0
+    articleGoodNumber: null,
+    articleLookNumber: null,
+    articleCollectionNumber: null
 
 })
 const articleId = route.params.articleId

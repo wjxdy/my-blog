@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.xulei.myblogbackend.entity.Article">
         <id column="article_id" property="articleId" />
-        <result column="reader_username" property="readerUsername" />
+        <result column="reader_username" property="username" />
         <result column="article_title" property="articleTitle" />
         <result column="article_add_time" property="articleAddTime" />
         <result column="article_context" property="articleContext" />

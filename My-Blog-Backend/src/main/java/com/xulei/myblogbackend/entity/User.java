@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 @ToString
 @Accessors(chain = true)
 @ApiModel(value = "Reader对象", description = "")
-public class Reader implements Serializable {
+public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,41 +34,33 @@ public class Reader implements Serializable {
 
     private String name;
 
-    /**
-     * 读者种类
-     */
-    @ApiModelProperty("读者种类")
-    private Integer categoryId;
-
-    private Byte sex;
-
-    private String wAddress;
-
-    private String hAddress;
+    private Integer sex;
 
     private String phone;
 
     private String email;
 
-    private LocalDateTime createTime;
-
-    private String notes;
-
     /**
-     * 读者账号
+     * 账号
      */
-    @ApiModelProperty("读者账号")
+    @ApiModelProperty("账号")
     private String username;
 
     /**
-     * 读者密码
+     * 密码
      */
-    @ApiModelProperty("读者密码")
+    @ApiModelProperty("密码")
     private String password;
 
     /**
-     * 读者账号创建时间 
+     * 账号创建时间
+     */
+    @ApiModelProperty("账号创建时间 ")
+    private LocalDateTime registerTime;
+
+    /**
+     * 用户图像路经
      */
     @ApiModelProperty("读者账号创建时间 ")
-    private LocalDateTime registerTime;
+    private String imgUrl;
 }

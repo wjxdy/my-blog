@@ -44,8 +44,8 @@ public class Comment implements Serializable {
     /**
      * 读者账号
      */
-    @ApiModelProperty("读者账号")
-    private String readerUsername;
+    @ApiModelProperty("用户账号")
+    private String username;
 
     /**
      * 评论时间

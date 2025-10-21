@@ -91,7 +91,7 @@ hr {
 
         <!-- 渲染博客元信息（作者、时间） -->
         <div class="blog-meta">
-            <span>作者：{{ article.readerUsername }}</span>
+            <span>作者：{{ article.username }}</span>
             <span>发布时间：{{ article.articleAddTime }}</span>
         </div>
 

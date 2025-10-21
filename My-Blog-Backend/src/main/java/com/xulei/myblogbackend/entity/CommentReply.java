@@ -47,7 +47,7 @@ public class CommentReply implements Serializable {
      * 回复的人的id
      */
     @ApiModelProperty("回复的人的id")
-    private String replyReaderUsername;
+    private String replyUsername;
 
     /**
      * 继续回复的人的id

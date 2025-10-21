@@ -109,17 +109,46 @@
                 </el-button>
             </el-tooltip>
         </div>
+        <div>
+            <el-button round @click="exit()" style="margin-right:200px ;">退出登录</el-button>
+        </div>
     </nav>
 
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue';
-
+import { ElMessage } from 'element-plus'
+import {  useRouter } from 'vue-router'
+import { useUserInfoStore } from "@/stores/counter";
 const activeIndex = ref('1')
+
+const router = useRouter()
 const handleSelect = (key: string, keyPath: string[]) => {
     console.log(key, keyPath)
 }
 
+const exit = () => {
+
+    // 清除localStorage中的用户信息
+    localStorage.removeItem('userInfo');
+
+    // 更新pinia中的用户状态
+    const userStore = useUserInfoStore();
+    userStore.loginData = {
+        sex: '',
+        id: '',
+        name: '',
+        token: '',
+        username: ''
+    }; // 或清空为初始值
+
+    // 显示退出成功消息
+    ElMessage.success("已成功退出登录");
+
+    // 跳转到登录页
+    router.push("/login");
 
 
+
+ }
 </script>

@@ -1,8 +1,8 @@
 package com.xulei.myblogbackend.service.impl;
 
-import com.xulei.myblogbackend.entity.Reader;
+import com.xulei.myblogbackend.entity.User;
 import com.xulei.myblogbackend.mapper.ReaderMapper;
-import com.xulei.myblogbackend.service.ReaderService;
+import com.xulei.myblogbackend.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2025-10-10
  */
 @Service
-public class ReaderServiceImpl extends ServiceImpl<ReaderMapper, Reader> implements ReaderService {
+public class UserServiceImpl extends ServiceImpl<ReaderMapper, User> implements UserService {
 
 }
