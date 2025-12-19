@@ -1,0 +1,23 @@
+# 多阶段构建：编译阶段
+FROM maven:3.8.8-eclipse-temurin-17 AS builder
+
+WORKDIR /app
+
+COPY pom.xml .
+
+COPY src ./src
+
+RUN mvn clean package -DskipTests  # 打包项目
+
+# 运行阶段（轻量镜像）
+FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/target/*.jar app.jar  # 复制Jar包
+
+EXPOSE 8080  # 暴露应用端口（与Spring Boot配置一致）
+
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0"
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

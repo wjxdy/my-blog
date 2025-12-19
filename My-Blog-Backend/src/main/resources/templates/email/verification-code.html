@@ -1,0 +1,73 @@
+<!-- src/main/resources/templates/email/verification-code.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小朱笔记 - 验证码验证</title>
+    <style>
+        /* 全局样式重置 */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", "Heiti SC", sans-serif; }
+        body { background-color: #f5f7fa; padding: 20px 0; }
+        /* 邮件容器 */
+        .email-container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden; }
+        /* 头部Banner */
+        .email-header { background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); padding: 30px 20px; text-align: center; color: #fff; }
+        .header-logo { font-size: 24px; font-weight: bold; margin-bottom: 8px; }
+        .header-desc { font-size: 15px; opacity: 0.9; }
+        /* 内容区域 */
+        .email-content { padding: 40px 30px; color: #333; line-height: 1.8; font-size: 16px; }
+        .content-greeting { margin-bottom: 20px; font-size: 18px; font-weight: 500; }
+        .content-desc { margin-bottom: 30px; color: #666; }
+        /* 验证码样式 */
+        .code-container { text-align: center; margin: 30px 0; }
+        .verification-code { display: inline-block; padding: 15px 40px; background: linear-gradient(120deg, #f0f5ff 0%, #e8f4f8 100%); border: 1px solid #e9ecef; border-radius: 8px; font-size: 28px; font-weight: bold; letter-spacing: 8px; color: #4361ee; }
+        /* 提示信息 */
+        .tips-container { margin: 30px 0; padding: 15px; background: #f8f9fa; border-left: 4px solid #4cc9f0; border-radius: 4px; color: #666; font-size: 14px; }
+        .tips-title { font-weight: bold; color: #333; margin-bottom: 5px; }
+        /* 底部信息 */
+        .email-footer { padding: 20px 30px; background: #f8f9fa; text-align: center; color: #999; font-size: 13px; border-top: 1px solid #e9ecef; }
+        .footer-desc { margin-bottom: 10px; }
+        .footer-warning { color: #ff6b6b; font-size: 12px; }
+        /* 响应式适配 */
+        @media (max-width: 500px) {
+            .email-content { padding: 30px 20px; font-size: 15px; }
+            .verification-code { font-size: 24px; padding: 12px 30px; letter-spacing: 6px; }
+            .email-header { padding: 25px 15px; }
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="email-header">
+        <div class="header-logo">小朱笔记</div>
+        <div class="header-desc">专注于高效笔记管理的工具</div>
+    </div>
+    <div class="email-content">
+        <div class="content-greeting">您好！</div>
+        <div class="content-desc">
+            感谢您使用小朱笔记！为了保障您的账号安全，本次操作需要验证您的身份，请在验证码输入框中填写以下验证码：
+        </div>
+        <!-- 动态验证码占位符：{{code}} -->
+        <div class="code-container">
+            <span class="verification-code">{{code}}</span>
+        </div>
+        <div class="tips-container">
+            <div class="tips-title">重要提示：</div>
+            <ul style="margin-left: 20px;">
+                <li>验证码有效期为 1 分钟，请尽快完成验证</li>
+                <li>请勿将验证码泄露给他人，保障账号安全</li>
+                <li>若您未发起本次操作，请忽略此邮件或联系客服</li>
+            </ul>
+        </div>
+        <div class="content-desc">
+            如有任何疑问，欢迎联系我们的客服团队，我们将竭诚为您服务！
+        </div>
+    </div>
+    <div class="email-footer">
+        <div class="footer-desc">小朱笔记 © 2025 版权所有</div>
+        <div class="footer-warning">此邮件为系统自动发送，请勿直接回复</div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xulei.myblogbackend.mapper.CommentReplyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xulei.myblogbackend.entity.CommentReply">
+        <id column="comment_reply_id" property="commentReplyId" />
+        <result column="comment_id" property="commentId" />
+        <result column="reply_reader_username" property="replyUsername" />
+        <result column="secondly_user_id" property="secondlyUserId" />
+        <result column="comment_reply_add_time" property="commentReplyAddTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        comment_reply_id, comment_id, reply_reader_username, secondly_user_id, comment_reply_add_time
+    </sql>
+
+</mapper>

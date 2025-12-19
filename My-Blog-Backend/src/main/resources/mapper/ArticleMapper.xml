@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xulei.myblogbackend.mapper.ArticleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xulei.myblogbackend.entity.Article">
+        <id column="article_id" property="articleId" />
+        <result column="reader_username" property="username" />
+        <result column="article_title" property="articleTitle" />
+        <result column="article_add_time" property="articleAddTime" />
+        <result column="article_context" property="articleContext" />
+        <result column="article_good_number" property="articleGoodNumber" />
+        <result column="article_look_number" property="articleLookNumber" />
+        <result column="article_collection_number" property="articleCollectionNumber" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        article_id, reader_username, article_title, article_add_time, article_context, article_good_number, article_look_number, article_collection_number
+    </sql>
+
+</mapper>
