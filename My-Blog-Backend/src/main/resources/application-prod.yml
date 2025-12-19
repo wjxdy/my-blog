@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/my-blog?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=false
+    username: root
+    password: ${DB_PASSWORD}
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD}
+      connect-timeout: 3000ms
+
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 8
+          min-idle: 2
+          max-wait: 3000ms
+
+server:
+  port: 8080  # 仅监听 HTTP 协议的 8080 端口（内网端口，不对外暴露）
+  forward-headers-strategy: NATIVE  # 新增：信任 Nginx 传递的 HTTPS 头（关键）
+  http2.enabled: true
+
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          servlet:
+            handler:
+              MappedInterceptor: DEBUG
+
+  file:
+    path: /opt/my-blog/backend/logs
+
+
+
