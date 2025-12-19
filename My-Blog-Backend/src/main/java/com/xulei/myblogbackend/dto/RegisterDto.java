@@ -1,6 +1,6 @@
 package com.xulei.myblogbackend.dto;
 
-import io.swagger.annotations.ApiModelProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,13 +21,11 @@ public class RegisterDto {
     /**
      * 账号
      */
-    @ApiModelProperty("账号")
     private String username;
 
     /**
      * 密码
      */
-    @ApiModelProperty("密码")
     private String password;
 
 
