@@ -42,6 +42,7 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     padding: 10px;
+    
 }
 
 /* 中间内容区域样式 */
@@ -55,11 +56,12 @@
 /* 右侧边栏样式 */
 .r-side {
     width: 300px;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255);
     flex-shrink: 0;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     padding: 10px;
+    padding-bottom: 10px
 }
 
 .blog-item {
