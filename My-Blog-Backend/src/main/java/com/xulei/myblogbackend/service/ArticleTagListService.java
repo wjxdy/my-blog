@@ -18,6 +18,6 @@ public interface ArticleTagListService extends IService<ArticleTagList> {
 
     void addTagList(List<ArticleTagList> articleTagList) throws BaseException;
 
-    void deleteTagList(String articleId,String tagId) throws BaseException;
+    void deleteTagList(String articleId) throws BaseException;
 
 }

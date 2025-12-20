@@ -39,6 +39,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Autowired
     private ArticleTagListService articleTagListService;
 
+    @Transactional
     @Override
     public void deleteArticleById(String articleId) throws BaseException {
         LoginInfo user = UserHolder.getUser();
@@ -54,6 +55,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (!isDelete) {
             throw new BaseException("添加失败");
         }
+        //删除与它关联的id
+        articleTagListService.deleteTagList(articleId);
 
     }
 

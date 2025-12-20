@@ -44,10 +44,9 @@ public class ArticleTagListServiceImpl extends ServiceImpl<ArticleTagListMapper,
 
 
     @Override
-    public void deleteTagList(String articleId, String tagId) throws BaseException {
+    public void deleteTagList(String articleId) throws BaseException {
         LambdaQueryWrapper<ArticleTagList> queryWrapper = new LambdaQueryWrapper<ArticleTagList>()
-                .eq(ArticleTagList::getArticleId, articleId)
-                .eq(ArticleTagList::getArticleTagId, tagId);
+                .eq(ArticleTagList::getArticleId, articleId);
         boolean remove = this.remove(queryWrapper);
         if (!remove) {
             throw new BaseException("删除文章标签失败");

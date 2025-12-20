@@ -26,14 +26,9 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
-    @PostMapping("/getLog")
+    @GetMapping("/getLog")
     public Result getLog(){
-        Article article = null;
-        try {
-            article = articleService.getLog();
-        } catch (Exception e) {
-            Result.fail("查询失败");
-        }
+        Article article = articleService.getLog();
         return Result.success(article);
     }
 
