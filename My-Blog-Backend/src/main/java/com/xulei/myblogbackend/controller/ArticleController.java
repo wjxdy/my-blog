@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xulei.myblogbackend.Excpetion.BaseException;
+import com.xulei.myblogbackend.dto.ArticleDto;
 import com.xulei.myblogbackend.dto.PageInfoDto;
 import com.xulei.myblogbackend.entity.Article;
 import com.xulei.myblogbackend.entity.LoginInfo;
@@ -25,14 +26,9 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
-    @PostMapping("/getLog")
+    @GetMapping("/getLog")
     public Result getLog(){
-        Article article = null;
-        try {
-            article = articleService.getLog();
-        } catch (Exception e) {
-            Result.fail("查询失败");
-        }
+        Article article = articleService.getLog();
         return Result.success(article);
     }
 
@@ -70,9 +66,9 @@ public class ArticleController {
 
 
     @PostMapping("/add")
-    public Result addArticle(@RequestBody Article article){
+    public Result addArticle(@RequestBody ArticleDto articleDto){
         try {
-            articleService.addAeticle(article);
+            articleService.addAeticle(articleDto);
         } catch (BaseException e) {
             return Result.fail(e.getMessage());
         }

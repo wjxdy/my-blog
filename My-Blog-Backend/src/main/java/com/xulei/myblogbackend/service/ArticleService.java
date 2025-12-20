@@ -1,6 +1,7 @@
 package com.xulei.myblogbackend.service;
 
 import com.xulei.myblogbackend.Excpetion.BaseException;
+import com.xulei.myblogbackend.dto.ArticleDto;
 import com.xulei.myblogbackend.dto.PageInfoDto;
 import com.xulei.myblogbackend.entity.Article;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -21,7 +22,7 @@ public interface ArticleService extends IService<Article> {
 
     PageInfoDto<List<Article>> getArticlePage(PageInfoDto pageInfoDto);
 
-    void addAeticle(Article article) throws BaseException;
+    void addAeticle(ArticleDto articleDto) throws BaseException;
 
     void updateArticle(Article article) throws BaseException;
 

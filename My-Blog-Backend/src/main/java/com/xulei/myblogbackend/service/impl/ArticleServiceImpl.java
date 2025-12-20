@@ -1,20 +1,28 @@
 package com.xulei.myblogbackend.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xulei.myblogbackend.Excpetion.BaseException;
+import com.xulei.myblogbackend.dto.ArticleDto;
 import com.xulei.myblogbackend.dto.PageInfoDto;
 import com.xulei.myblogbackend.entity.Article;
+import com.xulei.myblogbackend.entity.ArticleTagList;
 import com.xulei.myblogbackend.entity.LoginInfo;
 import com.xulei.myblogbackend.mapper.ArticleMapper;
 import com.xulei.myblogbackend.service.ArticleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xulei.myblogbackend.service.ArticleTagListService;
 import com.xulei.myblogbackend.utils.UserHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +36,10 @@ import java.util.stream.Collectors;
 @Service
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements ArticleService {
 
+    @Autowired
+    private ArticleTagListService articleTagListService;
+
+    @Transactional
     @Override
     public void deleteArticleById(String articleId) throws BaseException {
         LoginInfo user = UserHolder.getUser();
@@ -43,6 +55,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (!isDelete) {
             throw new BaseException("添加失败");
         }
+        //删除与它关联的id
+        articleTagListService.deleteTagList(articleId);
 
     }
 
@@ -67,11 +81,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
 
     @Override
-    public void addAeticle(Article article) throws BaseException {
+    @Transactional
+    public void addAeticle(ArticleDto articleDto) throws BaseException {
         LoginInfo user = UserHolder.getUser();
         if (user == null) {
             throw new BaseException("用户名为null");
         }
+        //给article赋值
+        Article article = BeanUtil.copyProperties(articleDto, Article.class);
+        // 生成无连字符UUID（32个字符）
+        String articleId = UUID.randomUUID().toString().replace("-", "");
+        article.setArticleId(articleId);
         article.setArticleAddTime(LocalDateTime.now());
         article.setUsername(user.getUserName());
         if (article.getArticleTitle().isBlank()) {
@@ -81,7 +101,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (!save) {
             throw new BaseException("添加失败");
         }
-
+        //给taglist赋值
+        List<ArticleTagList> list = articleDto.getArticleTags().stream().map(item -> {
+            ArticleTagList articleTagList = new ArticleTagList();
+            articleTagList.setArticleId(articleId);
+            articleTagList.setArticleTagId(item);
+            return articleTagList;
+        }).toList();
+        //批量添加
+        articleTagListService.addTagList(list);
     }
 
     @Override

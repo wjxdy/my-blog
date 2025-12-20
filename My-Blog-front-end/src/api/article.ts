@@ -1,6 +1,14 @@
 import request from '@/utils/request'
 import type { ApiResponse } from "@/types/api";
 
+
+export const getLogApi = ()=> {
+    return request({
+        url: `/article/getLog`,  // 拼接路径参数
+        method: 'get'
+    })
+}
+
 export const deleteArticleApi = (articleId : string): Promise<ApiResponse<any>> => {
     return request({
         url: `/article/deleteArticle/${articleId}`,  // 拼接路径参数

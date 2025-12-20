@@ -14,6 +14,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private Logininterceptor logininterceptor;
+    @Autowired
+    private Prefixinterceptor prefixinterceptor;
 
 
     // 当前WebConfig配置正确，excludePathPatterns会让拦截器跳过这些路径，不执行preHandle方法
@@ -32,7 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/news"
                 ).order(1);
 
-        registry.addInterceptor(new Prefixinterceptor())
+        registry.addInterceptor(prefixinterceptor)
                 .addPathPatterns("/**")
                 .order(0);  // 先执行，但已增加异常处理
     }

@@ -1,5 +1,6 @@
 package com.xulei.myblogbackend.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -24,15 +25,15 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @TableName("article_tag_list")
 
-public class ArticleTagList implements Serializable {
+public class ArticleTagList {
 
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 文章对应标签表idi
      */
 
-    @TableId("article_tag_list_id")
+    @TableId(value = "article_tag_list_id",type = IdType.ASSIGN_ID)
     private String articleTagListId;
 
     /**
