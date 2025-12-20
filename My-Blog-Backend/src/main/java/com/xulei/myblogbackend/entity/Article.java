@@ -24,9 +24,8 @@ import java.time.LocalDateTime;
 @ToString
 @Accessors(chain = true)
 
-public class Article implements Serializable {
+public class Article {
 
-    private static final long serialVersionUID = 1L;
 
     /**
      * 文章id

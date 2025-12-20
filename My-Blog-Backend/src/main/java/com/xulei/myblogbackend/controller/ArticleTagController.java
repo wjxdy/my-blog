@@ -16,7 +16,7 @@ public class ArticleTagController {
     @Autowired
     private ArticleTagService articleTagService;
 
-    @GetMapping("/")
+    @GetMapping
     public Result getTagList(){
         List<ArticleTag> list = null;
         try {
@@ -28,8 +28,8 @@ public class ArticleTagController {
     }
 
 
-    @GetMapping("/addTag")
-    public Result addTag(String tagInfo){
+    @PostMapping("/add")
+    public Result addTag(@RequestBody String tagInfo){
         try {
             articleTagService.addTag(tagInfo);
         } catch (BaseException e) {
@@ -38,7 +38,7 @@ public class ArticleTagController {
         return Result.ok();
     }
 
-    @DeleteMapping("/deleteTag/{tagId}")
+    @DeleteMapping("/delete/{tagId}")
     public Result deleteTag(@PathVariable("tagId") String tagId){
         try {
             articleTagService.deleteTag(tagId);

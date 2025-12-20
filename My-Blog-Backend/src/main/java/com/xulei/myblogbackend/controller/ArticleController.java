@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xulei.myblogbackend.Excpetion.BaseException;
+import com.xulei.myblogbackend.dto.ArticleDto;
 import com.xulei.myblogbackend.dto.PageInfoDto;
 import com.xulei.myblogbackend.entity.Article;
 import com.xulei.myblogbackend.entity.LoginInfo;
@@ -70,9 +71,9 @@ public class ArticleController {
 
 
     @PostMapping("/add")
-    public Result addArticle(@RequestBody Article article){
+    public Result addArticle(@RequestBody ArticleDto articleDto){
         try {
-            articleService.addAeticle(article);
+            articleService.addAeticle(articleDto);
         } catch (BaseException e) {
             return Result.fail(e.getMessage());
         }

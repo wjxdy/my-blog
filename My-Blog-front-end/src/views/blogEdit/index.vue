@@ -53,7 +53,7 @@
                         </el-col>
 
                         <el-col :span="24">
-                            <el-form-item label="作品简介">
+                            <el-form-item label="简介">
                                 <el-input v-model="article.articleIntro" :autosize="{ minRows: 2, maxRows: 4 }"
                                     type="textarea" placeholder="作品简介" style="width: 100%" />
                             </el-form-item>
@@ -61,15 +61,16 @@
 
                         <el-col :span="24">
                             <!-- 实现分类的下拉菜单 -->
-                            <el-form-item label="分类">
-                                <el-select v-model="article.articleTag" placeholder="请选择分类">
-                                    <el-option
-                                        v-for="item in tagList"
-                                        :key="item.id"
-                                        :label="item.name"
-                                        :value="item.name"
-                                    />
-                                </el-select>
+                            <el-form-item label="标签">
+                                <ElSelect v-model="article.articleTags" 
+                                    multiple 
+                                    placeholder="请选择文章标签"
+                                    style="width: 100%;"
+                                    >
+                                    <!-- 下拉选项列表 -->
+                                    <ElOption v-for="tag in tagList" :key="tag.articleTagId" :label="tag.articleTagName"
+                                        :value="tag.articleTagId" />
+                                    </ElSelect>
                             </el-form-item>
                         </el-col>
 
@@ -96,7 +97,7 @@ import { addArticleApi, updateArticleApi, getArticleApi } from "@/api/article";
 import 'md-editor-v3/lib/style.css';
 import { ElMessage } from 'element-plus';
 import { useRouter, useRoute } from 'vue-router';
-
+import { getTagListApi } from '@/api/tag';
 const router = useRouter()
 const route = useRoute()
 
@@ -107,6 +108,9 @@ const tagList = ref();
 
 const loadTagList = () => {
     // 调用tagList接口  
+    getTagListApi().then(res => {
+        tagList.value = res.data
+    })
 };
 
 
@@ -114,14 +118,10 @@ const article = ref({
     articleId: "",
     username: "",
     articleTitle: "",
-    articleTag: "",
     articleIntro: "",
     articleAddTime: "",
     articleContext: "",
-    articleGoodNumber: null,
-    articleLookNumber: null,
-    articleCollectionNumber: null
-
+    articleTags:[]
 })
 const articleId = route.params.articleId
 
@@ -151,14 +151,10 @@ const handleSubmit = async () => {
         console.error(error)
     }
 }
-
-
-onMounted(async () => {
-    // 如果有articleId，加载文章数据（编辑场景）
+const loadArticleData = async () => {
     if (articleId) {
         try {
             const result = await getArticleApi(articleId as string)
-            console.log("文章回显结果------", result)
             if (result.code == 200) {
                 article.value = result.data
             } else {
@@ -169,6 +165,12 @@ onMounted(async () => {
             console.error(error)
         }
     }
+}
+
+
+onMounted(() => {
+    loadArticleData()
+    loadTagList()
 })
 
 </script>

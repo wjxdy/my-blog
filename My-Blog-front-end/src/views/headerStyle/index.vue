@@ -112,9 +112,9 @@
                             <!-- 简单分类列表（可替换为 el-select/自定义组件） -->
                              <el-row justify="space-evenly">
                                 
-                                <div class="tag-item" v-for="item in tagList" :key="item.id">
+                                <div class="tag-item" v-for="item in tagList" :key="item.articleTagId">
                                     <el-col :span="6" :gutter="20" class="tag-title">
-                                        <el-button round @click="handletagSelect(item)">{{ item.name }}</el-button>   
+                                        <el-button round @click="handletagSelect(item)">{{ item.articleTagName }}</el-button>   
                                     </el-col>                     
                                 </div>
                                 <el-col :span="6" :gutter="20">
@@ -158,30 +158,25 @@ import { onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus'
 import {  useRouter } from 'vue-router'
 import { useUserInfoStore } from "@/stores/counter";
-
+import { getTagListApi } from '@/api/tag';
 const addTag = () => {
     ElMessage.info("分类添加功能正在开发中，敬请期待！")
 }
 
-const handletagSelect = (item: { id: number; name: string }) => {
+const handletagSelect = (item: { articleTagId: string; articleTagName: string }) => {
     console.log('Selected tag:', item);
     // 在这里处理分类选择逻辑，例如导航到分类页面
 };
 
 
 const loadTagList = () => {
+    // 调用tagList接口  
+    getTagListApi().then(res => {
+        tagList.value = res.data
+    })
+};
 
-    // 查询所有tag
-
-}
-
-const tagList = ref([
-    { id: 1, name: '技术' },
-    { id: 2, name: '生活' },
-    { id: 3, name: '旅行' },
-    { id: 4, name: '美食' },
-    { id: 5, name: '摄影' },
-]);
+const tagList = ref();
 
 const loginStatus = ref('退出登录')
 const router = useRouter()
@@ -207,7 +202,6 @@ const exit = () => {
         // 更新pinia中的用户状态
         const userStore = useUserInfoStore();
         userStore.loginData = {
-            sex: '',
             id: '',
             name: '',
             token: '',
@@ -220,6 +214,10 @@ const exit = () => {
         router.push('/login')
      }
 }
+
+
+
+
 onMounted(() => { 
     loadLoginInfo()
     loadTagList()
