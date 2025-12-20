@@ -10,15 +10,13 @@ const request = axios.create({
 request.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
     let userInfo= localStorage.getItem('userInfo')
-    console.log(userInfo);
+    
     
     if(userInfo){
       let token= JSON.parse(userInfo).token
       
       config.headers.token=token
-      console.log(config.headers.token);
       
-
     }
     return config;
   }, function (error) {
