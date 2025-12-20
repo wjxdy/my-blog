@@ -16,4 +16,4 @@ git pull https://github.com/wjxdy/my-blog.git
   --spring.profiles.active=dev
   ```
 
-  
+ ![](https://xulei-book-image.oss-cn-beijing.aliyuncs.com/a.png）") 
