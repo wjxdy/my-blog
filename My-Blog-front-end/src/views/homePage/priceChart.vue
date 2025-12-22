@@ -6,7 +6,7 @@
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { createChart, CandlestickSeries } from 'lightweight-charts'
 import { Client, IMessage } from '@stomp/stompjs'
-import axios from 'axios'
+import { fetchHistoryDataApi } from '@/api/kLine'
 
 const el = ref<HTMLDivElement | null>(null)
 let chart: any = null
@@ -57,7 +57,7 @@ const createSeries = () => {
 ========================= */
 const fetchHistoryData = async () => {
     try {
-        const res = await axios.get('http://localhost:8080/binance')
+        const res = await fetchHistoryDataApi()
         const data = res.data // 假设返回数组
 
         data.reverse().forEach((item: any) => {
@@ -81,7 +81,7 @@ const fetchHistoryData = async () => {
 ========================= */
 const connectWebSocket = () => {
     stompClient = new Client({
-        brokerURL: 'ws://localhost:8080/ws',
+        brokerURL: 'wss://xuleii.cn/ws',
         reconnectDelay: 5000,
     })
 

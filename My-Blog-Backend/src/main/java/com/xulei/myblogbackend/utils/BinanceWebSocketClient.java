@@ -57,11 +57,6 @@ public class BinanceWebSocketClient extends WebSocketClient {
                 stringRedisTemplate.opsForZSet().add(key, message, score);
                 // 设置 key 的过期时间，例如 1 天（86400 秒）
                 stringRedisTemplate.expire(key, Duration.ofDays(1));
-                log.info("实际接收到的信息:{}",message);
-                log.info("存储 K 线数据到 Redis: key={}, score={}  数据:{}", key, score,event);
-
-
-                // 2️⃣ 广播给前端
                 // 前端订阅路径 /topic/kline/{symbol}/{interval}
                 String topic = "/topic/kline/";
                 messagingTemplate.convertAndSend(topic, event);
@@ -72,11 +67,12 @@ public class BinanceWebSocketClient extends WebSocketClient {
         }
     }
 
+
     @Override
     public void onClose(int code, String reason, boolean remote) {
         log.warn("WebSocket close: code={}, reason={}, remote={}", code, reason, remote);
-
     }
+
 
     @Override
     public void onError(Exception ex) {
@@ -85,6 +81,7 @@ public class BinanceWebSocketClient extends WebSocketClient {
             close(1008, "连接异常，主动关闭");
         }
     }
+
 
     public void stopClient() {
         if (isOpen()) {

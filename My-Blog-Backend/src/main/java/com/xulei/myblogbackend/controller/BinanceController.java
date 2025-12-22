@@ -23,9 +23,9 @@ public class BinanceController {
 
 
     @GetMapping()
-    public List<BinanceKlineEvent> getHistoryInfo() {
+    public Result<List<BinanceKlineEvent>> getHistoryInfo() {
         List<BinanceKlineEvent> latestKlines = klineService.getLatestKlines();
-        return latestKlines;
+        return Result.success(latestKlines);
     }
 
 
