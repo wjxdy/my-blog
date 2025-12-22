@@ -244,7 +244,6 @@ const getArticlePage = async () => {
         if (result.code == 200) {
             ArticleList.value = result.data.data;
             pageInfo.value.pageTotal = result.data.pageTotal;
-            console.log(ArticleList.value);
         } else {
             ElMessage.error("查询失败");
         }

@@ -1,6 +1,6 @@
 package com.xulei.myblogbackend.service;
 
-import com.xulei.myblogbackend.Excpetion.BaseException;
+import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.dto.RegisterDto;
 import com.xulei.myblogbackend.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;

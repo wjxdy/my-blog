@@ -1,8 +1,7 @@
 package com.xulei.myblogbackend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.xulei.myblogbackend.Excpetion.BaseException;
+import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.dto.EmailVerifyDto;
-import com.xulei.myblogbackend.entity.Result;
 import com.xulei.myblogbackend.entity.User;
 import com.xulei.myblogbackend.service.EmailService;
 import com.xulei.myblogbackend.service.UserService;

@@ -15,5 +15,4 @@ import { RouterView } from 'vue-router'
 <style lang="css" scoped>
 
 
-
 </style>

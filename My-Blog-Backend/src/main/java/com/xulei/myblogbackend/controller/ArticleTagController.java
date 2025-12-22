@@ -1,6 +1,6 @@
 package com.xulei.myblogbackend.controller;
 
-import com.xulei.myblogbackend.Excpetion.BaseException;
+import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.entity.ArticleTag;
 import com.xulei.myblogbackend.entity.Result;
 import com.xulei.myblogbackend.service.ArticleTagService;

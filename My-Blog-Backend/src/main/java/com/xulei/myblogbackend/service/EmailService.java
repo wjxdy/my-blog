@@ -1,8 +1,7 @@
 package com.xulei.myblogbackend.service;
 
-import com.xulei.myblogbackend.Excpetion.BaseException;
+import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.dto.EmailVerifyDto;
-import org.springframework.stereotype.Service;
 
 /**
  * @author xulei

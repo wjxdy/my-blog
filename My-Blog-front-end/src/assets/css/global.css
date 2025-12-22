@@ -23,3 +23,6 @@ html, body {
     display: flex;
     flex-direction: column;
 }
+#tv-attr-logo {
+    display: none !important;
+}

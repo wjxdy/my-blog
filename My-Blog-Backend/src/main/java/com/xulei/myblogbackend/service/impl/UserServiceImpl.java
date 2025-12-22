@@ -3,9 +3,8 @@ package com.xulei.myblogbackend.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.xulei.myblogbackend.Excpetion.BaseException;
+import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.dto.RegisterDto;
-import com.xulei.myblogbackend.entity.Result;
 import com.xulei.myblogbackend.entity.User;
 import com.xulei.myblogbackend.mapper.ReaderMapper;
 import com.xulei.myblogbackend.service.UserService;
@@ -14,7 +13,6 @@ import com.xulei.myblogbackend.utils.JwtUtils;
 import com.xulei.myblogbackend.vo.UserLoginInfoVo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 

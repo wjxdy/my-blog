@@ -1,9 +1,8 @@
 package com.xulei.myblogbackend.controller;
-import com.xulei.myblogbackend.Excpetion.BaseException;
+import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.dto.EmailVerifyDto;
 import com.xulei.myblogbackend.entity.Result;
 import com.xulei.myblogbackend.service.EmailService;
-import com.xulei.myblogbackend.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

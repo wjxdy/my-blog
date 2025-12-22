@@ -1,4 +1,4 @@
-package com.xulei.myblogbackend.Excpetion;
+package com.xulei.myblogbackend.excpetion;
 
 public class BaseException extends Exception{
 

@@ -31,6 +31,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/article/getLog",
                         "/tag/**",
                         "/email/**",
+                        "/binance/**",
                         "/news"
                 ).order(1);
 

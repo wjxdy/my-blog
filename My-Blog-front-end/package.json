@@ -12,14 +12,18 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "@stomp/stompjs": "^7.2.1",
     "@vavt/cm-extension": "^1.11.1",
     "@vavt/v3-extension": "^4.0.0",
     "axios": "^1.12.2",
+    "echarts": "^6.0.0",
     "element-plus": "^2.11.4",
     "highlight.js": "^11.11.1",
+    "lightweight-charts": "^5.1.0",
     "marked": "^16.4.0",
     "md-editor-v3": "^6.1.0",
     "pinia": "^3.0.3",
+    "sockjs-client": "^1.6.1",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1"
   },
