@@ -8,38 +8,28 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Kline {
-    // K线起始时间
-    private long t;
-    // K线结束时间
-    private long T;
-    // 交易对
-    private String s;
-    // K线间隔
-    private String i;
-    // 第一笔成交ID
-    private long f;
-    // 最后一笔成交ID
-    private long L;
-    // 开盘价
-    private String o;
-    // 收盘价
-    private String c;
-    // 最高价
-    private String h;
-    // 最低价
-    private String l;
-    // 成交量
-    private String v;
-    // 成交笔数
-    private long n;
-    // 是否完结
-    private boolean x;
-    // 成交额
-    private String q;
-    // 主动买入的成交量
-    private String V;
-    // 主动买入的成交额
-    private String Q;
-    // 忽略字段
-    private String B;
+    private String t;  // K线起始时间
+    private long T;  // K线结束时间
+    private String s; // 交易对
+    private String i; // K线间隔
+    private String f;   // 第一笔成交ID
+    private String L;   // 最后一笔成交ID
+    private String o; // 开盘价
+    private String c; // 收盘价
+    private String h; // 最高价
+    private String l; // 最低价
+    private String v; // 成交量
+    private long n;   // 成交笔数
+    private boolean x; // 是否完结
+    private String q; // 成交额
+    private String V; // 主动买入成交量
+    private String Q; // 主动买入成交额
+    private String B; // 忽略字段
+
+    // 为 Service 映射提供语义化 getter
+    public String getLastTradeId() { return L; }
+    public String getLowPrice() { return l; }
+
+    public long getEndTime(){return T; }
+    public String getStartTime(){return t; }
 }

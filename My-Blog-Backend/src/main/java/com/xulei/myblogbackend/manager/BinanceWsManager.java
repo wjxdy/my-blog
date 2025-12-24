@@ -1,5 +1,6 @@
 package com.xulei.myblogbackend.manager;
 
+import com.xulei.myblogbackend.service.BinanceKlineHistoryService;
 import com.xulei.myblogbackend.utils.BinanceWebSocketClient;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,8 @@ public class BinanceWsManager {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+    @Autowired
+    private BinanceKlineHistoryService binanceKlineHistoryService;
 
 
     public BinanceWsManager(StringRedisTemplate redisTemplate) {
@@ -34,7 +37,7 @@ public class BinanceWsManager {
 
     public void connect() {
         try {
-            client = new BinanceWebSocketClient(redisTemplate,simpMessagingTemplate, this);
+            client = new BinanceWebSocketClient(redisTemplate,simpMessagingTemplate, this,binanceKlineHistoryService);
             client.connect();
             log.info("Binance WebSocket connecting...");
         } catch (Exception e) {

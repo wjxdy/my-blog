@@ -100,6 +100,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (!save) {
             throw new BaseException("添加失败");
         }
+        if (articleDto.getArticleTags().isEmpty()){
+            return;
+        }
         //给taglist赋值
         List<ArticleTagList> list = articleDto.getArticleTags().stream().map(item -> {
             ArticleTagList articleTagList = new ArticleTagList();

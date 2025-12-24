@@ -15,7 +15,8 @@ public class CodeGenerator {
         String password = "xuleixulei";
 
         // 必须指定要生成的表名（替换为你的实际表名，如"user","article"）
-        String[] tables = {"map_info"}; // 例如：{"book", "user"}
+        // 例如：{"book", "user"}
+        String[] tables = {"binance_kline_history"};
 
         FastAutoGenerator.create(url, username, password)
                 // 3. 全局配置
@@ -31,7 +32,6 @@ public class CodeGenerator {
                             .mapper("mapper")
                             .service("service")
                             .serviceImpl("service.impl")
-                            .controller("controller")
                             // Mapper XML 输出路径
                             .pathInfo(Collections.singletonMap(OutputFile.xml,
                                     System.getProperty("user.dir") + "/src/main/resources/mapper"));
@@ -45,9 +45,9 @@ public class CodeGenerator {
                             .enableLombok() // 开启 Lombok
                             .enableChainModel() // 链式调用
                             // Controller 策略
-                            .controllerBuilder()
+                            /*.controllerBuilder()
                             .enableRestStyle() // RestController
-                            .enableHyphenStyle() // 连字符命名（/user-info）
+                            .enableHyphenStyle() // 连字符命名（/user-info）*/
                             // Service 策略
                             .serviceBuilder()
                             .formatServiceFileName("%sService") // XXXService

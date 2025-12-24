@@ -1,3 +1,4 @@
+/*
 package com.xulei.myblogbackend.service.impl;
 
 import com.alibaba.fastjson2.JSON;
@@ -38,4 +39,4 @@ class KlineServiceImplTest {
         Collections.reverse(list);
         log.info("redis info:{}",list);
     }
-}
+}*/

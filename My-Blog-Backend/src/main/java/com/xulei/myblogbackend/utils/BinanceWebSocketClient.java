@@ -4,37 +4,47 @@ import com.alibaba.fastjson2.JSON;
 import com.xulei.myblogbackend.entity.BinanceKlineEvent;
 import com.xulei.myblogbackend.entity.Kline;
 import com.xulei.myblogbackend.manager.BinanceWsManager;
+import com.xulei.myblogbackend.service.BinanceKlineHistoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Component;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-
 import static com.xulei.myblogbackend.utils.StringContext.BINANCE_WEBSOCKET_URL;
+import static com.xulei.myblogbackend.utils.StringContext.KLINE_CHCHE_KEY;
 
 /**
  * @author xulei
  */
 @Slf4j
+@Component
 public class BinanceWebSocketClient extends WebSocketClient {
 
     private final StringRedisTemplate stringRedisTemplate;
     private final BinanceWsManager manager;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ZSetKlineCacheUtil zSetKlineCacheUtil;
+    private final BinanceKlineHistoryService binanceKlineHistoryService;
+
 
 
     public BinanceWebSocketClient(
             StringRedisTemplate stringRedisTemplate,
             SimpMessagingTemplate messagingTemplate,
-            BinanceWsManager manager
+            BinanceWsManager manager,
+            BinanceKlineHistoryService binanceKlineHistoryService
     ) throws URISyntaxException {
         super(new URI(BINANCE_WEBSOCKET_URL));
         this.stringRedisTemplate = stringRedisTemplate;
         this.messagingTemplate = messagingTemplate;
         this.manager = manager;
+        this.binanceKlineHistoryService = binanceKlineHistoryService;
+        this.zSetKlineCacheUtil = new ZSetKlineCacheUtil(stringRedisTemplate,binanceKlineHistoryService);
     }
 
     @Override
@@ -50,10 +60,11 @@ public class BinanceWebSocketClient extends WebSocketClient {
                 return;
             }
             if (event != null && event.getK() != null) {
+                zSetKlineCacheUtil.checkAndHandleZSetData();
                 // 秒级时间戳
-                long score = event.getK().getT() / 1000;
+                long score = event.getK().getEndTime() / 1000;
                 // 存 ZSet：key = kline:{symbol}:{interval}, score = 开盘时间, value = JSON
-                String key = "kline:" + event.getK().getS() + ":" + event.getK().getI();
+                String key = KLINE_CHCHE_KEY;
                 stringRedisTemplate.opsForZSet().add(key, message, score);
                 // 设置 key 的过期时间，例如 1 天（86400 秒）
                 stringRedisTemplate.expire(key, Duration.ofDays(1));

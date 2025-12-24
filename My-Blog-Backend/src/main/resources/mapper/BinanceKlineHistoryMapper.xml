@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xulei.myblogbackend.mapper.BinanceKlineHistoryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xulei.myblogbackend.entity.BinanceKlineHistory">
+        <id column="id" property="id" />
+        <result column="event_type" property="eventType" />
+        <result column="event_time" property="eventTime" />
+        <result column="symbol" property="symbol" />
+        <result column="kline_start_time" property="klineStartTime" />
+        <result column="kline_end_time" property="klineEndTime" />
+        <result column="interval_type" property="intervalType" />
+        <result column="first_trade_id" property="firstTradeId" />
+        <result column="last_trade_id" property="lastTradeId" />
+        <result column="open_price" property="openPrice" />
+        <result column="close_price" property="closePrice" />
+        <result column="high_price" property="highPrice" />
+        <result column="low_price" property="lowPrice" />
+        <result column="volume" property="volume" />
+        <result column="trade_count" property="tradeCount" />
+        <result column="is_kline_closed" property="isKlineClosed" />
+        <result column="quote_volume" property="quoteVolume" />
+        <result column="buy_volume" property="buyVolume" />
+        <result column="buy_quote_volume" property="buyQuoteVolume" />
+        <result column="ignore_param" property="ignoreParam" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, event_type, event_time, symbol, kline_start_time, kline_end_time, interval_type, first_trade_id, last_trade_id, open_price, close_price, high_price, low_price, volume, trade_count, is_kline_closed, quote_volume, buy_volume, buy_quote_volume, ignore_param, create_time, update_time
+    </sql>
+
+    <!-- 批量插入：直接接收BinanceKlineEvent列表 -->
+    <insert id="addKlineHistoryCache" parameterType="java.util.List">
+        INSERT INTO binance_kline_history
+        (event_type, event_time, symbol, kline_start_time, kline_end_time,
+        interval_type, first_trade_id, last_trade_id, open_price, close_price,
+        high_price, low_price, volume, trade_count, is_kline_closed,
+        quote_volume, buy_volume, buy_quote_volume, ignore_param, create_time, update_time)
+        VALUES
+        <foreach collection="list" item="event" separator=",">
+            (
+            #{event.e}, #{event.E},
+            <choose>
+                <when test="event.s != null and event.s.trim() != ''">#{event.s}</when>
+                <otherwise>#{event.k.s}</otherwise>
+            </choose>,
+            #{event.k.t}, #{event.k.T}, #{event.k.i}, #{event.k.f}, #{event.k.L},
+            #{event.k.o, typeHandler=org.apache.ibatis.type.BigDecimalTypeHandler},
+            #{event.k.c, typeHandler=org.apache.ibatis.type.BigDecimalTypeHandler},
+            #{event.k.h, typeHandler=org.apache.ibatis.type.BigDecimalTypeHandler},
+            #{event.k.l, typeHandler=org.apache.ibatis.type.BigDecimalTypeHandler},
+            #{event.k.v, typeHandler=org.apache.ibatis.type.BigDecimalTypeHandler},
+            #{event.k.n, jdbcType=INTEGER},
+            #{event.k.x},
+            #{event.k.q, typeHandler=org.apache.ibatis.type.BigDecimalTypeHandler},
+            #{event.k.V, typeHandler=org.apache.ibatis.type.BigDecimalTypeHandler},
+            #{event.k.Q, typeHandler=org.apache.ibatis.type.BigDecimalTypeHandler},
+            #{event.k.B},
+            now(),
+            now()
+            )
+        </foreach>
+    </insert>
+
+
+</mapper>

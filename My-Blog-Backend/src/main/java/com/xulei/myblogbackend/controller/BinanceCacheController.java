@@ -2,9 +2,7 @@ package com.xulei.myblogbackend.controller;
 
 import com.xulei.myblogbackend.entity.BinanceKlineEvent;
 import com.xulei.myblogbackend.service.KlineService;
-import com.xulei.myblogbackend.webSocketService.BinanceWebSocketService;
 import com.xulei.myblogbackend.entity.Result;
-import com.xulei.myblogbackend.utils.BinanceWebSocketClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/binance")
 @CrossOrigin
-public class BinanceController {
+public class BinanceCacheController {
 
     @Autowired
     private KlineService klineService;
