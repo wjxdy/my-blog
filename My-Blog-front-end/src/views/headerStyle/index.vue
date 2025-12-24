@@ -160,7 +160,7 @@
                     :popper-style="{ width: '250px', padding: '10px' }" 
                     >
                     <!-- 触发元素 -->
-                    <a href="javascript:;" class="tag-trigger">分类</a>
+                    <a href="javascript:;" class="tag-trigger">标签</a>
 
                     <!-- 自定义 content 插槽（嵌入分类选择） -->
                     <template #content>
