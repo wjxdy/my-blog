@@ -1,6 +1,7 @@
 package com.xulei.myblogbackend.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -15,6 +16,7 @@ import com.xulei.myblogbackend.service.ArticleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xulei.myblogbackend.service.ArticleTagListService;
 import com.xulei.myblogbackend.utils.UserHolder;
+import com.xulei.myblogbackend.vo.ArticleTagVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private ArticleTagListService articleTagListService;
+    @Autowired
+    private ArticleMapper articleMapper;
+
 
     @Transactional
     @Override
@@ -63,12 +68,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public PageInfoDto<List<Article>> getArticlePage(PageInfoDto pageInfoDto) {
         PageHelper.startPage(pageInfoDto.getCurrentPage(), pageInfoDto.getPageSize(),"article_add_time DESC");
+        List<ArticleTagVo> tags = pageInfoDto.getTags();
+        List<String> tagIdList = tags.stream().map(ArticleTagVo::getArticleTagId).toList();
 
-        List<Article> list = this.list();
+        List<Article> list = articleMapper.getArticleInfo(tagIdList,pageInfoDto.getCondition());
+
         Page<Article> page = (Page<Article>)list;
         PageInfoDto<List<Article>> listPageInfoDto = new PageInfoDto<>();
         listPageInfoDto.setPageTotal( page.getTotal());
-
         List<Article> dataInfo = page.getResult().stream().map(article -> article.setArticleContext(null))
                 .collect(Collectors.toList());
 

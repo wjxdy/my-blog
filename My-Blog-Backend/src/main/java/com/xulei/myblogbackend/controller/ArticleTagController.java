@@ -4,6 +4,7 @@ import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.entity.ArticleTag;
 import com.xulei.myblogbackend.entity.Result;
 import com.xulei.myblogbackend.service.ArticleTagService;
+import com.xulei.myblogbackend.vo.ArticleTagVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class ArticleTagController {
 
     @GetMapping
     public Result getTagList(){
-        List<ArticleTag> list = null;
+        List<ArticleTagVo> list = null;
         try {
             list = articleTagService.getTagList();
         } catch (Exception e) {
@@ -28,14 +29,15 @@ public class ArticleTagController {
     }
 
 
-    @PostMapping("/add")
-    public Result addTag(@RequestBody String tagInfo){
+    @GetMapping("/add")
+    public Result addTag(@RequestParam("tagName") String tagInfo){
+        ArticleTagVo tagVo =null;
         try {
-            articleTagService.addTag(tagInfo);
+            tagVo = articleTagService.addTag(tagInfo);
         } catch (BaseException e) {
-            Result.fail(e.getMessage());
+            return Result.fail(e.getMessage());
         }
-        return Result.ok();
+        return Result.success(tagVo);
     }
 
     @DeleteMapping("/delete/{tagId}")

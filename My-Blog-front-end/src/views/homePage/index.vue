@@ -151,7 +151,7 @@ hr {
         </div>
         
         <div class="middle">
-            <div class="blog-item" v-for="(article, index) in ArticleList" :key="article.articleId">
+            <div class="blog-item" v-for="(article, index) in useUserInfoStore().ArticleList" :key="article.articleId">
                 <router-link :to="`/article/${article.articleId}`" class="blog-title">
                     {{ article.articleTitle }}
                 </router-link>
@@ -168,9 +168,9 @@ hr {
 
             </div>
             <div class="demo-pagination-block">
-                <el-pagination v-model:current-page="pageInfo.currentPage" v-model:page-size="pageInfo.pageSize"
+                <el-pagination v-model:current-page="userInfoStore.pageInfo.currentPage" v-model:page-size="userInfoStore.pageInfo.pageSize"
                     :page-sizes="[5, 10, 20, 50]" size="large" layout="total, sizes, prev, pager, next, jumper"
-                    :total="pageInfo.pageTotal" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+                    :total="userInfoStore.pageInfo.pageTotal" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
             </div>
         </div>
         <div class="r-side">
@@ -186,64 +186,28 @@ import RSideView from './r-side.vue'
 import LSideView from './l-side.vue'
 import priceChartView from './priceChart.vue'
 import { formatDate } from "@/utils/dateUtils";
-
-
-
-// 定义文章类型接口
-interface Article {
-    articleId: number;
-    articleTitle: string;
-    username: string;
-    articleAddTime: string;
-    articleIntro: string;
-}
-
-// 定义分页数据接口
-interface ArticlePageData {
-    data: Article[];
-    pageTotal: number;
-}
-
-// 定义API响应接口
-interface ApiResponse<T> {
-    code: number;
-    message: string;
-    data: T;
-}
-
-// 定义分页信息接口
-interface PageInfo {
-    pageSize: number;
-    pageTotal: number;
-    currentPage: number;
-}
-
-const pageInfo = ref<PageInfo>({
-    pageSize: 5,
-    pageTotal: 0,
-    currentPage: 1
-});
-
+import { useUserInfoStore } from "@/stores/counter";
+const userInfoStore = useUserInfoStore();
+    
 const handleSizeChange = (val: number) => {
-    pageInfo.value.pageSize = val;
-    pageInfo.value.currentPage = 1;
+    userInfoStore.pageInfo.pageSize = val;
+    userInfoStore.pageInfo.currentPage = 1;
     getArticlePage();
 };
 
 const handleCurrentChange = (val: number) => {
-    pageInfo.value.currentPage = val;
+    userInfoStore.pageInfo.currentPage = val;
     getArticlePage();
 };
 
-const ArticleList = ref<Article[]>([]);
-
 const getArticlePage = async () => {
     try {
-        const result = await getArticlePageApi(pageInfo.value);
+        
+        const result = await getArticlePageApi(useUserInfoStore().pageInfo);
 
         if (result.code == 200) {
-            ArticleList.value = result.data.data;
-            pageInfo.value.pageTotal = result.data.pageTotal;
+            userInfoStore.ArticleList = result.data.data;
+            userInfoStore.pageInfo.pageTotal = result.data.pageTotal;
         } else {
             ElMessage.error("查询失败");
         }

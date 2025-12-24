@@ -13,5 +13,8 @@
     <sql id="Base_Column_List">
         article_tag_id, article_tag_name, artcle_tag_add_time
     </sql>
+    <select id="getTagList" resultType="com.xulei.myblogbackend.vo.ArticleTagVo">
+        select article_tag_id, article_tag_name from article_tag
+    </select>
 
 </mapper>

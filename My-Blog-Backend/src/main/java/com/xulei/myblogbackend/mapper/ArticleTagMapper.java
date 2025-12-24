@@ -2,6 +2,9 @@ package com.xulei.myblogbackend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xulei.myblogbackend.entity.ArticleTag;
+import com.xulei.myblogbackend.vo.ArticleTagVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.xulei.myblogbackend.entity.ArticleTag;
  */
 public interface ArticleTagMapper extends BaseMapper<ArticleTag> {
 
+    List<ArticleTagVo> getTagList();
 }

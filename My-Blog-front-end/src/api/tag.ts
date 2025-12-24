@@ -6,15 +6,15 @@ export const getTagListApi = () => {
     })
 }
 
-export const addTagApi = (params: String) => { 
+export const addTagApi = (params: string) => { 
     return request({
         url: '/tag/add',
-        method: 'post',
-        data: params
+        method: 'get',
+        params: { tagName: params }
     })
 }
 
-export const deleteTagApi = (tagId: String) => { 
+export const deleteTagApi = (tagId: string) => { 
     return request({
         url: `/tag/delete/${tagId}`,
         method: 'delete'

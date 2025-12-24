@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import type { Article, PageInfo, Tag} from "@/types/api";
 
 export const useCounterStore = defineStore('counter', () => {
   const count = ref(0)
@@ -18,6 +19,18 @@ export const useUserInfoStore = defineStore('userInfo', {
             name:'',
             token:'',
             username:''
-        } //登录信息
+        },
+        //登录信息
+        pageInfo: <PageInfo>{
+          pageSize: 5,
+          pageTotal: 0,
+          currentPage: 1,
+          condition: '',
+          tags: []
+        },
+        ArticleList: <Article[]>([]),
+        headerCenterDialogVisible: false,
+        tagList: <Tag[]>([])
+
     })
 })    

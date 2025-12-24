@@ -4,7 +4,7 @@ import homePageView from "@/views/homePage/index.vue";
 import blogTestView from '@/views/blogText/index.vue'
 import blogEditView from '@/views/blogEdit/index.vue'
 import loginView from "@/views/login/index.vue";
-import newsView from "@/views/mapInfo/IpDeviceDetector.vue";
+import newsView from "@/views/mapInfo/index.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

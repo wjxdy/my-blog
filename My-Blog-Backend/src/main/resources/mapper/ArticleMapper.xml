@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.xulei.myblogbackend.entity.Article">
         <id column="article_id" property="articleId" />
-        <result column="reader_username" property="username" />
+        <result column="username" property="username" />
         <result column="article_title" property="articleTitle" />
         <result column="article_add_time" property="articleAddTime" />
         <result column="article_context" property="articleContext" />
@@ -16,7 +16,47 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        article_id, reader_username, article_title, article_add_time, article_context, article_good_number, article_look_number, article_collection_number
+        article_id, username, article_title, article_add_time, article_context, article_good_number, article_look_number, article_collection_number
     </sql>
+
+    <sql id="Search_Column_List">
+        a.article_id,
+        a.username,
+        a.article_title,
+        a.article_add_time,
+        a.article_good_number,
+        a.article_look_number,
+        a.article_collection_number
+    </sql>
+
+    <!-- 替换你原有对应的SQL部分，完整整合非空判断 -->
+    <select id="getArticleInfo" resultMap="BaseResultMap">
+        <!-- 1. 绑定标题模糊查询参数：拼接%，避免SQL注入，跨数据库兼容 -->
+        <bind name="likeTitle" value="'%' + (titleKeyword == null ? '' : titleKeyword) + '%'"/>
+
+        select
+        <include refid="Search_Column_List"/>
+        from article as a
+        <!-- 用<where>标签替代原有的WHERE关键字：自动处理多余的AND/OR，避免语法错误 -->
+        <where>
+            <!-- 2. 新增<if>标签：判断tagIds非空才添加标签筛选条件 -->
+            <if test="tagIds != null and tagIds.size() > 0">
+                a.article_id in (
+                select atl.article_id
+                from article_tag_list as atl
+                WHERE atl.article_tag_id in (
+                <foreach collection="tagIds" item="tagId" open="(" separator="," close=")">
+                    #{tagId} <!-- 预编译参数，安全防注入 -->
+                </foreach>
+                )
+                )
+            </if>
+
+            <!-- 3. 标题模糊查询条件：新增<if>判断（可选，推荐添加），同时无需手动处理AND -->
+            <if test="titleKeyword != null and titleKeyword.trim() != ''">
+                AND a.article_title LIKE #{likeTitle}
+            </if>
+        </where>
+    </select>
 
 </mapper>

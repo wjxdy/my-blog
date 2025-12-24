@@ -79,5 +79,4 @@ public class ArticleController {
         return Result.ok();
     }
 
-
 }

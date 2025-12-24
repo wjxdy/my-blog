@@ -3,6 +3,7 @@ package com.xulei.myblogbackend.service;
 import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.entity.ArticleTag;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xulei.myblogbackend.vo.ArticleTagVo;
 
 import java.util.List;
 
@@ -16,9 +17,9 @@ import java.util.List;
  */
 public interface ArticleTagService extends IService<ArticleTag> {
 
-    List<ArticleTag> getTagList();
+    List<ArticleTagVo> getTagList();
 
-    void addTag(String tagInfo) throws BaseException;
+    ArticleTagVo addTag(String tagInfo) throws BaseException;
 
     void deleteTag(String tagId) throws BaseException;
 }

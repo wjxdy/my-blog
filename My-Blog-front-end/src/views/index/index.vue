@@ -31,14 +31,14 @@
 
     <div class="common-layout">
         <el-container>
-            <el-header style="min-height: 80px; background: transparent;">
+            <el-header style="min-height: 100px;padding-bottom: 10px; background: transparent;">
 
                 <headerView />
 
             </el-header>
             
 
-            <el-main style="margin: 0; padding: 0; flex: 1; overflow: auto;">
+            <el-main style="margin: 20px,0; padding: 0; flex: 1; overflow: auto;">
 
 
                 <RouterView />
@@ -50,16 +50,45 @@
 
         <newsView />
     </div>
-
-
-
-
+    <el-dialog v-model="useUserInfoStore().headerCenterDialogVisible" title="添加标签" width="500" align-center>
+        <el-input v-model="input" style="width: 240px;padding: 0px auto;" placeholder="添加标签" />
+        
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button @click="useUserInfoStore().headerCenterDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="addTag()">
+                    确定
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 
 <script lang="ts" setup>
+import { useUserInfoStore } from "../../stores/counter";
 import { ref } from "vue";
 import headerView from "@/views/headerStyle/index.vue";
-import newsView from "@/views/mapInfo/IpDeviceDetector.vue";
+import newsView from "@/views/mapInfo/index.vue"
+import { addTagApi } from "@/api/tag";
+import { ElMessage } from 'element-plus';
 
-
+const userInfoStore = useUserInfoStore();
+const input = ref("");
+const addTag = async () => {
+    
+    if (!input.value.trim()) { // 建议用trim()过滤纯空白输入
+        ElMessage.error("标签不能为空");
+        return;
+    }
+    const result = await addTagApi(input.value);
+    if (result.code == 200) {
+        ElMessage.success("添加成功");
+        console.log(result.data);
+        userInfoStore.tagList.push(result.data);
+        userInfoStore.headerCenterDialogVisible = false;
+        input.value = "";
+    } else {
+        ElMessage.error(result.message || "添加失败"); // 增加可选链避免报错
+    }
+};
 </script>
