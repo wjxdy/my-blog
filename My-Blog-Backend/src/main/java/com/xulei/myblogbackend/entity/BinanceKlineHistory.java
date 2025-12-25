@@ -58,7 +58,7 @@ public class BinanceKlineHistory implements Serializable {
     /**
      * K线结束时间（毫秒级时间戳，对应JSON中的k.T）
      */
-    private long klineEndTime;
+    private String klineEndTime;
 
     /**
      * K线间隔（如1m/5m/1h，对应JSON中的k.i）

@@ -124,16 +124,22 @@ const article = ref({
     articleTags:[]
 })
 const articleId = route.params.articleId
-
+const articleUpdateData = ref();
 
 
 // 根据是否有articleId判断是新增还是编辑
 const handleSubmit = async () => {
     try {
         let result;
+        const articleUpdateDto = ref({
+            article: { ...articleUpdateData.value },
+            articleTags: [article.value.articleTags.join(',')]
+        });
+        console.log(articleUpdateDto);
+        
         if (articleId) {
             // 编辑现有文章
-            result = await updateArticleApi(article.value)
+            result = await updateArticleApi(articleUpdateDto.value)
         } else {
             // 新增文章
             result = await addArticleApi(article.value)
@@ -157,6 +163,7 @@ const loadArticleData = async () => {
             const result = await getArticleApi(articleId as string)
             if (result.code == 200) {
                 article.value = result.data
+                articleUpdateData.value = result.data
             } else {
                 ElMessage.error("加载文章失败")
             }

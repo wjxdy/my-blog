@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Kline {
     private String t;  // K线起始时间
-    private long T;  // K线结束时间
+    private String T;  // K线结束时间
     private String s; // 交易对
     private String i; // K线间隔
     private String f;   // 第一笔成交ID
@@ -30,6 +30,6 @@ public class Kline {
     public String getLastTradeId() { return L; }
     public String getLowPrice() { return l; }
 
-    public long getEndTime(){return T; }
+    public String getEndTime(){return T; }
     public String getStartTime(){return t; }
 }

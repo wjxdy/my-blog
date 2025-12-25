@@ -1,5 +1,6 @@
 package com.xulei.myblogbackend.controller;
 
+import com.xulei.myblogbackend.dto.ArticleUpdateDto;
 import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.dto.ArticleDto;
 import com.xulei.myblogbackend.dto.PageInfoDto;
@@ -70,9 +71,9 @@ public class ArticleController {
 
 
     @PutMapping("/updateArticle")
-    public Result updateArticle(@RequestBody Article article){
+    public Result updateArticle(@RequestBody ArticleUpdateDto articleUpdateDto){
         try {
-            articleService.updateArticle(article);
+            articleService.updateArticle(articleUpdateDto);
         } catch (BaseException e) {
             return Result.fail(e.getMessage());
         }

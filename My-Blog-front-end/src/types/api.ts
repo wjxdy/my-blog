@@ -1,7 +1,7 @@
-export interface ApiResponse<T> {
-    code: number;
-    data: T;
-    message?: string; // 可选的消息字段
+export interface ApiResponse {
+    data: any;
+    message: string;
+    code: number; // 可选的消息字段
 }
 // 定义分页信息接口
 export interface PageInfo {

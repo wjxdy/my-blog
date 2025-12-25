@@ -23,6 +23,6 @@ public class StringContext {
     // 每次入库数量：最后100条
     public static final int BATCH_INSERT_COUNT = 100;
     //kline cache key
-    public static final String KLINE_CHCHE_KEY = "kline:BTCUSDT:1m";
+    public static final String KLINE_CACHE_KEY = "kline:BTCUSDT:1m";
 
 }

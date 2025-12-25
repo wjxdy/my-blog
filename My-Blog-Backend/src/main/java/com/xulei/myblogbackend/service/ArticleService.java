@@ -1,5 +1,6 @@
 package com.xulei.myblogbackend.service;
 
+import com.xulei.myblogbackend.dto.ArticleUpdateDto;
 import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.dto.ArticleDto;
 import com.xulei.myblogbackend.dto.PageInfoDto;
@@ -24,7 +25,7 @@ public interface ArticleService extends IService<Article> {
 
     void addAeticle(ArticleDto articleDto) throws BaseException;
 
-    void updateArticle(Article article) throws BaseException;
+    void updateArticle(ArticleUpdateDto articleUpdateDto) throws BaseException;
 
     Article getLog();
 }

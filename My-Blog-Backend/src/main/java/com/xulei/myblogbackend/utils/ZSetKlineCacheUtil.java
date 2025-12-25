@@ -29,14 +29,14 @@ public class ZSetKlineCacheUtil {
 
     public void checkAndHandleZSetData(){
 
-        Long zSetSize = stringRedisTemplate.opsForZSet().zCard(KLINE_CHCHE_KEY);
+        Long zSetSize = stringRedisTemplate.opsForZSet().zCard(KLINE_CACHE_KEY);
         if (zSetSize == null || zSetSize <= ZSET_THRESHOLD) {
             // 未超过200条，无需处理
             return;
         }
         // 2. 获取ZSet中最后100条数据（score最大的100条，即倒序前100条）
         // zRevRange：按score倒序获取，参数：key、起始索引（0）、结束索引（99）→ 取前100条（即最后100条）
-        Set<String> zSetLast100Str = stringRedisTemplate.opsForZSet().reverseRange(KLINE_CHCHE_KEY, 0, BATCH_INSERT_COUNT - 1);
+        Set<String> zSetLast100Str = stringRedisTemplate.opsForZSet().reverseRange(KLINE_CACHE_KEY, 0, BATCH_INSERT_COUNT - 1);
         if (CollectionUtils.isEmpty(zSetLast100Str)) {
             return;
         }
@@ -62,7 +62,7 @@ public class ZSetKlineCacheUtil {
         long startRank = zSetSize - BATCH_INSERT_COUNT;
         long endRank = zSetSize - 1;
         stringRedisTemplate.opsForZSet()
-                .removeRange(KLINE_CHCHE_KEY, startRank, endRank);
+                .removeRange(KLINE_CACHE_KEY, startRank, endRank);
     }
 
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.xulei.myblogbackend.dto.ArticleUpdateDto;
 import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.dto.ArticleDto;
 import com.xulei.myblogbackend.dto.PageInfoDto;
@@ -121,12 +122,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleTagListService.addTagList(list);
     }
 
+    @Transactional
     @Override
-    public void updateArticle(Article article) throws BaseException {
+    public void updateArticle(ArticleUpdateDto articleUpdateDto) throws BaseException {
         LoginInfo user = UserHolder.getUser();
         if (user == null) {
             throw  new BaseException("请先登录再更改");
         }
+
+        Article article = articleUpdateDto.getArticle();
         if (!article.getUsername().equals(user.getUserName())) {
             throw new BaseException("非本人文章无法修改");
         }
@@ -136,11 +140,26 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .set(Article::getArticleIntro,article.getArticleIntro())
                 .set(Article::getArticleUpdateTime,LocalDateTime.now())
                 .set(!article.getArticleTitle().isEmpty(),Article::getArticleTitle,article.getArticleTitle());
-
         boolean update = this.update(updateWrapper);
         if (!update) {
             throw new BaseException("修改失败");
         }
+        List<String> articleTags = articleUpdateDto.getArticleTags();
+        //删除与它关联的id
+        if (articleTags.isEmpty()){
+            return;
+        }
+        articleTagListService.deleteTagList(article.getArticleId());
+        List<ArticleTagList> list = articleTags.stream().map(item -> {
+            ArticleTagList articleTagList = new ArticleTagList();
+            articleTagList.setArticleId(article.getArticleId());
+            articleTagList.setArticleTagId(item);
+            return articleTagList;
+        }).toList();
+        //批量添加
+        articleTagListService.addTagList(list);
+
+
     }
 
     @Override

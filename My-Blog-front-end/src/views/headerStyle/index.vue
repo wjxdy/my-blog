@@ -184,7 +184,7 @@
                 </el-tooltip>
             </li>
             <li><a href="#">作品</a></li>
-            <li><a href="#">友链</a></li>
+            <li><a href="#" @click="selectTool()">工具</a></li>
             <li><a href="#">订阅</a></li>
             <li><a href="#">关于</a></li>
         </ul>
@@ -227,7 +227,18 @@ import { getTagListApi } from '@/api/tag';
 import { getArticlePageApi } from "@/api/article";
 import type {  Tag } from "@/types/api";
 
-
+const selectTool = () => {
+    userInfoStore.pageInfo = {
+        pageSize: 5,
+        pageTotal: 0,
+        currentPage: 1,
+        condition: '',
+        tags: [
+            { articleTagId: '699da7cd5f3340449cbf2977c5263037', articleTagName: '工具' }
+        ]
+    }
+    getArticlePage();
+};
 const handleClose = (tag: Tag) => {
     const index = userInfoStore.pageInfo.tags.indexOf(tag);
     if (index > -1) {

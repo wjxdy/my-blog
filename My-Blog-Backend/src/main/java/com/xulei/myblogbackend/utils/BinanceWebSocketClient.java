@@ -15,8 +15,10 @@ import org.springframework.stereotype.Component;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import static com.xulei.myblogbackend.utils.StringContext.BINANCE_WEBSOCKET_URL;
-import static com.xulei.myblogbackend.utils.StringContext.KLINE_CHCHE_KEY;
+import java.time.Instant;
+import java.time.LocalDateTime;
+
+import static com.xulei.myblogbackend.utils.StringContext.*;
 
 /**
  * @author xulei
@@ -56,23 +58,29 @@ public class BinanceWebSocketClient extends WebSocketClient {
     public void onMessage(String message) {
         try {
             BinanceKlineEvent event = JSON.parseObject(message, BinanceKlineEvent.class);
-            if (!event.getK().isX()){
+            // 2. 先做空判断，避免空指针（优先判断非空，再做业务逻辑）
+            if (event == null || event.getK() == null) {
+                log.warn("K线事件或K线数据为空，忽略处理：message={}", message);
                 return;
             }
-            if (event != null && event.getK() != null) {
-                zSetKlineCacheUtil.checkAndHandleZSetData();
-                // 秒级时间戳
-                long score = event.getK().getEndTime() / 1000;
-                // 存 ZSet：key = kline:{symbol}:{interval}, score = 开盘时间, value = JSON
-                String key = KLINE_CHCHE_KEY;
-                stringRedisTemplate.opsForZSet().add(key, message, score);
-                // 设置 key 的过期时间，例如 1 天（86400 秒）
-                stringRedisTemplate.expire(key, Duration.ofDays(1));
-                // 前端订阅路径 /topic/kline/{symbol}/{interval}
-                String topic = "/topic/kline/";
-                messagingTemplate.convertAndSend(topic, event);
-                log.info("广播 K 线数据给前端: topic={}", topic);
+            // 3. 仅处理已闭合的K线（isX()为true表示K线结束）
+            if (!event.getK().isX()) {
+                return;
             }
+            zSetKlineCacheUtil.checkAndHandleZSetData();
+            // 秒级时间戳
+
+            long score = Instant.now().getEpochSecond();;
+
+            // 存 ZSet：key = kline:{symbol}:{interval}, score = 开盘时间, value = JSON
+            String key = KLINE_CACHE_KEY;
+            stringRedisTemplate.opsForZSet().add(key, message, score);
+            // 设置 key 的过期时间，例如 1 天（86400 秒）
+            stringRedisTemplate.expire(key, Duration.ofDays(1));
+            // 前端订阅路径 /topic/kline/{symbol}/{interval}
+            String topic = "/topic/kline/";
+            messagingTemplate.convertAndSend(topic, event);
+            log.info("广播 K 线数据给前端: topic={}", topic);
         } catch (Exception e) {
             log.error("解析或存储 K 线数据异常", e);
         }
