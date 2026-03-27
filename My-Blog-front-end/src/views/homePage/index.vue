@@ -5,63 +5,119 @@
     min-height: auto;
     width: 100%;
     max-width: 1500px;
-    margin: 10px auto ;
+    margin: 0 auto;
     padding: 0 20px;
     box-sizing: border-box;
     gap: 30px;
     align-items: flex-start;
     /* 使子项根据自身内容高度显示，不拉伸 */
 }
-/* 左侧整体容器：控制内部两个侧边栏上下排列 */
+/* 左侧整体容器 */
 .left-container {
     display: flex;
     flex-direction: column;
-    /* 垂直排列 */
-    gap: 20px;
-    /* 两个侧边栏之间的上下间距 */
-    width: 300px;
-    /* 左侧整体宽度（和单个侧边栏一致） */
-    flex-shrink: 0;
-    /* 不压缩 */
-}
-
-.p-side{
     width: 260px;
-    background-color: rgba(255, 255, 255, 0.7);
     flex-shrink: 0;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 10px;
-}
-
-/* 左侧边栏样式 */
-.l-side {
-    width: 260px;
-    background-color: rgba(255, 255, 255, 0.7);
-    flex-shrink: 0;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 10px;
-    
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
 }
 
 /* 中间内容区域样式 */
 .middle {
     flex-grow: 1;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     padding: 10px 20px;
+    background-color: #fff;
 }
 
 /* 右侧边栏样式 */
 .r-side {
     width: 260px;
-    background-color: rgba(255, 255, 255);
+    background-color: #fff;
     flex-shrink: 0;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 10px;
-    padding-bottom: 10px
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
+}
+
+/* ==================== 手机端响应式设计 ==================== */
+@media screen and (max-width: 1024px) {
+    .parent {
+        flex-direction: column;
+        padding: 0 10px;
+        gap: 15px;
+    }
+    
+    /* 左侧边栏隐藏 */
+    .left-container {
+        display: none;
+    }
+    
+    /* 右侧边栏放到底部 */
+    .r-side {
+        width: 100%;
+        order: 3;
+    }
+    
+    /* 中间内容全宽 */
+    .middle {
+        width: 100%;
+        padding: 10px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .parent {
+        padding: 0 8px;
+        gap: 10px;
+        margin: 5px auto;
+    }
+    
+    /* 隐藏左右边栏，只保留中间内容 */
+    .left-container,
+    .r-side {
+        display: none;
+    }
+    
+    /* 中间内容全宽显示 */
+    .middle {
+        width: 100%;
+        padding: 8px;
+        border-radius: 8px;
+    }
+    
+    /* 博客列表样式调整 */
+    .blog-item {
+        padding: 12px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+    }
+    
+    .blog-title {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+    
+    .blog-meta {
+        font-size: 0.8rem;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    
+    /* 预览内容高度调整 */
+    .blog-content-preview :deep(.md-preview-wrapper) {
+        max-height: 150px;
+    }
+    
+    /* 分页器调整 */
+    .demo-pagination-block {
+        padding: 10px 0;
+    }
+    
+    :deep(.el-pagination) {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 }
 
 .blog-item {
@@ -69,18 +125,13 @@
     background: #fff;
     max-width: 100%;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
     margin: 0 auto 15px;
     /* 关键：左右auto实现居中，保留底部margin */
     transition: transform 0.2s;
 }
 
-/* 博客文章悬停效果 */
-.blog-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    border-color: rgba(66, 185, 131, 0.2);
-}
+
 
 /* 博客标题样式 */
 .blog-title {
@@ -95,11 +146,7 @@
     line-height: 1.4;
 }
 
-/* 博客标题悬停效果 */
-.blog-title:hover {
-    color: #42b983;
-    transform: translateX(5px);
-}
+
 
 /* 博客元信息样式 */
 .blog-meta {
@@ -178,14 +225,8 @@ hr {
 <template>
     <div class="parent">
         <div class="left-container">
-            <div class="p-side">
-                <price-chart-view />
-            </div>
-            <div class="l-side">
-                <l-side-view />
-
-            </div>
-
+            <profile-card />
+            <price-chart-view />
         </div>
         
         <div class="middle">
@@ -220,7 +261,7 @@ hr {
             </div>
         </div>
         <div class="r-side">
-            <r-side-view />
+            <tags-cloud />
         </div>
     </div>
 </template>
@@ -228,8 +269,8 @@ hr {
 import { getArticlePageApi } from "@/api/article";
 import { ref, onMounted } from "vue";
 import { ElMessage } from 'element-plus';
-import RSideView from './r-side.vue'
-import LSideView from './l-side.vue'
+import ProfileCard from './profile-card.vue'
+import TagsCloud from './tags-cloud.vue'
 import priceChartView from './priceChart.vue'
 import { formatDate } from "@/utils/dateUtils";
 import { useUserInfoStore } from "@/stores/counter";

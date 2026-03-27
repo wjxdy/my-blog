@@ -3,6 +3,8 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    position: sticky;
+    top: 20px;
 }
 
 /* 个人信息卡片样式 - 简约小巧风格 */

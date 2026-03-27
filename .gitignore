@@ -55,6 +55,12 @@ application-*.properties
 # 如果你想保留示例配置，可单独放行
 !application-example.yml
 
+# 放行生产环境配置（只包含环境变量引用，无敏感信息）
+!application-prod.yml
+
+# 放行基础配置（已移除敏感信息，使用环境变量）
+!application.yml
+
 ############################
 # ===== Node / Vue 3 =====
 ############################

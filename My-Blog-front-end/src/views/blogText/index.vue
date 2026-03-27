@@ -185,23 +185,43 @@ onMounted(() => {
     padding: 0 20px;
 }
 
-/* 文章容器卡片式设计 */
+/* 文章容器 */
 .article-container {
     max-width: 65%;
-    /* 适当的最大宽度，适合阅读 */
     margin: 0 auto;
-    /* 关键：左右自动外边距实现水平居中 */
     padding: 40px;
-    /* 增加内边距，提升阅读体验 */
     margin-bottom: 50px;
     box-sizing: border-box;
-    /* 确保padding不会影响总宽度 */
     background-color: #ffffff;
-    /* 白色背景，提升对比度 */
-    border-radius: 12px;
-    /* 圆角边框，增加现代感 */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    /* 柔和阴影，增加层次感 */
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+    .page-wrapper {
+        padding: 0 10px;
+    }
+    
+    .article-container {
+        max-width: 100%;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .article-title {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .article-meta {
+        font-size: 0.85rem;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    /* 隐藏右侧目录 */
+    .fixed-catalog {
+        display: none;
+    }
 }
 
 /* 标题样式优化 */
@@ -251,10 +271,7 @@ onMounted(() => {
     width: 250px;
     max-height: calc(100vh - 140px);
     overflow-y: auto;
-    background-color: rgba(251, 250, 250, 0.9);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    margin-left: 20px;
+    background-color: #fff;
     box-sizing: border-box;
 }
 

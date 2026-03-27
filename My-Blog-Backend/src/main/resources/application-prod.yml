@@ -24,6 +24,15 @@ server:
   forward-headers-strategy: NATIVE  # 新增：信任 Nginx 传递的 HTTPS 头（关键）
   http2.enabled: true
 
+# 阿里云OSS配置（从环境变量读取）
+aliyun:
+  oss:
+    endpoint: ${ALIYUN_OSS_ENDPOINT:oss-cn-beijing.aliyuncs.com}
+    access-key-id: ${ALIYUN_OSS_ACCESS_KEY_ID:}
+    access-key-secret: ${ALIYUN_OSS_ACCESS_KEY_SECRET:}
+    bucket-name: xl-my-blog
+    dir-prefix: blog/
+
 
 logging:
   level:

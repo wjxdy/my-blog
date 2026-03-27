@@ -124,6 +124,142 @@
 .settings-btn {
     flex-shrink: 0;
 }
+
+/* 移动端汉堡菜单按钮 */
+.mobile-menu-btn {
+    display: none;
+    flex-shrink: 0;
+}
+
+/* 移动端菜单遮罩层 */
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+}
+
+.mobile-menu-overlay.show {
+    display: block;
+}
+
+/* 移动端侧边菜单 */
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: -280px;
+    width: 280px;
+    height: 100vh;
+    background: #fff;
+    z-index: 999;
+    flex-direction: column;
+    padding: 60px 20px 20px;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease;
+}
+
+.mobile-menu.show {
+    right: 0;
+}
+
+.mobile-menu .mobile-nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.mobile-menu .mobile-nav-menu li {
+    margin-bottom: 15px;
+}
+
+.mobile-menu .mobile-nav-menu li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    display: block;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.mobile-menu .mobile-nav-menu li a:hover {
+    color: #007bff;
+}
+
+.mobile-menu .mobile-search-box {
+    margin-bottom: 20px;
+}
+
+.mobile-menu .mobile-search-box button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.mobile-menu .mobile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mobile-menu .mobile-actions button {
+    width: 100%;
+}
+
+/* 关闭按钮 */
+.mobile-menu-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 15px;
+        gap: 10px;
+    }
+    
+    .logo span {
+        font-size: 18px;
+    }
+    
+    .nav-menu {
+        display: none;
+    }
+    
+    .search-box {
+        display: none;
+    }
+    
+    .button-row,
+    .settings-btn,
+    .navbar>div:last-child {
+        display: none;
+    }
+    
+    .mobile-menu-btn {
+        display: block;
+    }
+    
+    .mobile-menu {
+        display: flex;
+    }
+}
 </style>
 
 <template>
@@ -165,14 +301,66 @@
         <div>
             <el-button round @click="exit()">{{ loginStatus }}</el-button>
         </div>
+        
+        <!-- 移动端汉堡菜单按钮 -->
+        <div class="mobile-menu-btn">
+            <el-button @click="showMobileMenu = true" circle size="large">
+                <el-icon size="20">
+                    <Menu />
+                </el-icon>
+            </el-button>
+        </div>
     </nav>
+    
+    <!-- 移动端菜单遮罩 -->
+    <div class="mobile-menu-overlay" :class="{ show: showMobileMenu }" @click="showMobileMenu = false"></div>
+    
+    <!-- 移动端侧边菜单 -->
+    <div class="mobile-menu" :class="{ show: showMobileMenu }">
+        <button class="mobile-menu-close" @click="showMobileMenu = false">✕</button>
+        
+        <ul class="mobile-nav-menu">
+            <li><router-link to="/homePage" @click="showMobileMenu = false">首页</router-link></li>
+            <li><a href="#" @click.prevent="selectTool(); showMobileMenu = false">工具</a></li>
+        </ul>
+        
+        <div class="mobile-search-box">
+            <el-input v-model="userInfoStore.pageInfo.condition" size="large" placeholder="输入搜索内容" clearable />
+            <button @click="handleMobileSearch()">搜索</button>
+        </div>
+        
+        <div class="mobile-actions">
+            <el-button @click="$router.push({ path: '/ArticleEdit' }); showMobileMenu = false" type="primary">
+                <el-icon><EditPen /></el-icon> 创作
+            </el-button>
+            <el-button @click="$router.push({ path: '/settings' }); showMobileMenu = false">
+                <el-icon><Setting /></el-icon> 设置
+            </el-button>
+            <el-button @click="handleMobileExit()">
+                {{ loginStatus }}
+            </el-button>
+        </div>
+    </div>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
+import { Menu } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus'
 import {  useRouter } from 'vue-router'
 import { useUserInfoStore } from "@/stores/counter";
 import { getArticlePageApi } from "@/api/article";
+
+const showMobileMenu = ref(false);
+
+const handleMobileSearch = () => {
+    showMobileMenu.value = false;
+    getArticlePage();
+};
+
+const handleMobileExit = () => {
+    showMobileMenu.value = false;
+    exit();
+};
 
 const selectTool = () => {
     userInfoStore.pageInfo = {

@@ -76,17 +76,6 @@ jobs:
             # 创建目录
             mkdir -p $BACKEND_DIR $FRONTEND_DIR $LOG_DIR
             
-            # 创建数据库配置文件
-            echo "🔧 创建数据库配置..."
-            cat > $BACKEND_DIR/application.yml << 'DBCONFIG'
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/blog?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false
-    username: root
-    password: xulei030626
-DBCONFIG
-            
             # 移动文件
             echo "📁 移动文件..."
             rm -rf $FRONTEND_DIR/dist
@@ -101,9 +90,12 @@ DBCONFIG
             echo "🛑 停止旧服务..."
             pkill -9 -f "java -jar" 2>/dev/null || true
             
-            # 启动新服务
+            # 启动新服务（使用prod配置）
             echo "🚀 启动后端服务..."
             cd $BACKEND_DIR
+            export SPRING_PROFILES_ACTIVE=prod
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            export REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD || '' }}
             export ALIYUN_OSS_ACCESS_KEY_ID=${{ secrets.ALIYUN_OSS_ACCESS_KEY_ID }}
             export ALIYUN_OSS_ACCESS_KEY_SECRET=${{ secrets.ALIYUN_OSS_ACCESS_KEY_SECRET }}
             nohup java -jar $JAR_NAME > $LOG_DIR/app.log 2>&1 &

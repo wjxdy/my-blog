@@ -31,14 +31,14 @@
 
     <div class="common-layout">
         <el-container>
-            <el-header style="min-height: 100px;padding-bottom: 10px; background: transparent;">
+            <el-header style="height: auto; padding: 10px 0; background: transparent;">
 
                 <headerView />
 
             </el-header>
             
 
-            <el-main style="margin: 20px,0; padding: 0; flex: 1; overflow: auto;">
+            <el-main style="margin: 10px 0 0 0; padding: 0; flex: 1; overflow: auto;">
 
 
                 <RouterView />

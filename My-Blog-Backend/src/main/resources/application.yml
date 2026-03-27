@@ -1,13 +1,16 @@
 spring:
   application:
     name: My-Blog-Backend
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
 
   # 邮件发送配置
   mail:
     host: smtp.qq.com          # QQ 邮箱 SMTP 服务器
     port: 465                  # 加密端口（SSL）
     username: 2077152374@qq.com # 你的 QQ 邮箱账号
-    password: xmrfffrjikpycehd  # 你的 QQ 邮箱授权码（已验证正确）
+    password: ${MAIL_PASSWORD}
     protocol: smtp             # 协议类型
     default-encoding: UTF-8     # 默认编码
     properties:
@@ -46,12 +49,5 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
 
-# 阿里云OSS配置（从环境变量读取）
-aliyun:
-  oss:
-    endpoint: ${ALIYUN_OSS_ENDPOINT:oss-cn-beijing.aliyuncs.com}
-    access-key-id: ${ALIYUN_OSS_ACCESS_KEY_ID:}
-    access-key-secret: ${ALIYUN_OSS_ACCESS_KEY_SECRET:}
-    bucket-name: xl-my-blog
-    dir-prefix: blog/
+
 
