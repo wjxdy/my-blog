@@ -106,7 +106,7 @@
     
     /* 预览内容高度调整 */
     .blog-content-preview :deep(.md-preview-wrapper) {
-        max-height: 150px;
+        max-height: 250px;
     }
     
     /* 分页器调整 */
@@ -175,21 +175,8 @@
 
 /* 限制预览区域的最大高度 */
 .blog-content-preview :deep(.md-preview-wrapper) {
-    max-height: 120px;
+    max-height: 300px;
     overflow: hidden;
-    position: relative;
-}
-
-/* 底部渐变遮罩，提示更多内容 */
-.blog-content-preview :deep(.md-preview-wrapper)::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: linear-gradient(to bottom, transparent, #fff);
-    pointer-events: none;
 }
 
 /* 阅读全文链接样式 - 灰色极简风格 */
@@ -289,11 +276,19 @@ const handleCurrentChange = (val: number) => {
     getArticlePage();
 };
 
-// 获取预览内容（截取前300字符的Markdown内容）
+// 获取预览内容（保留图片和格式）
 const getPreviewContent = (content: string | undefined) => {
     if (!content) return ''
-    // 截取前300字符，保持简洁
-    return content.slice(0, 300) + (content.length > 300 ? '...' : '')
+    
+    // 移除 base64 图片（太长无法渲染），保留普通图片和文字
+    let processed = content.replace(/!\[([^\]]*)\]\(data:image\/[^;]+;base64,[^)]+\)/g, '')
+    
+    // 截取前600字符
+    if (processed.length > 600) {
+        return processed.slice(0, 600) + '\n\n...'
+    }
+    
+    return processed
 }
 
 const getArticlePage = async () => {

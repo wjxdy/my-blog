@@ -90,14 +90,23 @@ jobs:
             echo "🛑 停止旧服务..."
             pkill -9 -f "java -jar" 2>/dev/null || true
             
-            # 启动新服务（使用prod配置）
+            # 写入环境变量到文件（确保变量正确传递）
+            echo "📝 配置环境变量..."
+            cat > $BACKEND_DIR/.env << 'EOF'
+SPRING_PROFILES_ACTIVE=prod
+DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD || '' }}
+ALIYUN_OSS_ACCESS_KEY_ID=${{ secrets.ALIYUN_OSS_ACCESS_KEY_ID }}
+ALIYUN_OSS_ACCESS_KEY_SECRET=${{ secrets.ALIYUN_OSS_ACCESS_KEY_SECRET }}
+ALIYUN_OSS_ENDPOINT=oss-cn-beijing.aliyuncs.com
+EOF
+            
+            # 启动新服务（使用prod配置，从文件加载环境变量）
             echo "🚀 启动后端服务..."
             cd $BACKEND_DIR
-            export SPRING_PROFILES_ACTIVE=prod
-            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            export REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD || '' }}
-            export ALIYUN_OSS_ACCESS_KEY_ID=${{ secrets.ALIYUN_OSS_ACCESS_KEY_ID }}
-            export ALIYUN_OSS_ACCESS_KEY_SECRET=${{ secrets.ALIYUN_OSS_ACCESS_KEY_SECRET }}
+            set -a
+            source .env
+            set +a
             nohup java -jar $JAR_NAME > $LOG_DIR/app.log 2>&1 &
             
             # 等待服务启动
