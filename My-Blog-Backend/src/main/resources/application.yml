@@ -1,10 +1,6 @@
 spring:
   application:
     name: My-Blog-Backend
-  profiles:
-#    active: dev
-
-
 
   # 邮件发送配置
   mail:

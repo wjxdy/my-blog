@@ -1,0 +1,140 @@
+name: 前后端自动打包+部署到CentOS服务器
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 检出代码
+      - name: 检出仓库代码
+        uses: actions/checkout@v4
+
+      # 2. 前端打包
+      - name: 配置Node环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ./My-Blog-front-end/package-lock.json
+
+      - name: 前端打包
+        working-directory: ./My-Blog-front-end
+        run: |
+          npm install
+          npm run build
+          [ -f dist/index.html ] || (echo "❌ 前端打包失败" && exit 1)
+          echo "✅ 前端打包成功"
+
+      # 3. 后端打包
+      - name: 配置Java环境
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: 后端打包
+        working-directory: ./My-Blog-Backend
+        run: |
+          mvn clean package -DskipTests
+          [ -f target/My-Blog-Backend-0.0.1-SNAPSHOT.jar ] || (echo "❌ 后端打包失败" && exit 1)
+          echo "✅ 后端打包成功"
+
+      # 4. 传输文件到服务器
+      - name: 传输文件到服务器
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.CENTOS_HOST }}
+          username: ${{ secrets.CENTOS_USER }}
+          key: ${{ secrets.CENTOS_SSH_KEY }}
+          port: ${{ secrets.CENTOS_PORT || 22 }}
+          source: "My-Blog-front-end/dist,My-Blog-Backend/target/My-Blog-Backend-0.0.1-SNAPSHOT.jar"
+          target: "/opt/my-blog/temp/"
+          rm: true
+
+      # 5. 服务器部署脚本
+      - name: 服务器部署
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.CENTOS_HOST }}
+          username: ${{ secrets.CENTOS_USER }}
+          key: ${{ secrets.CENTOS_SSH_KEY }}
+          port: ${{ secrets.CENTOS_PORT || 22 }}
+          script: |
+            # 配置路径
+            BACKEND_DIR="/opt/my-blog/backend"
+            FRONTEND_DIR="/opt/my-blog/front-end"
+            TEMP_DIR="/opt/my-blog/temp"
+            LOG_DIR="$BACKEND_DIR/logs"
+            JAR_NAME="My-Blog-Backend-0.0.1-SNAPSHOT.jar"
+            
+            echo "=== 开始部署 ==="
+            
+            # 创建目录
+            mkdir -p $BACKEND_DIR $FRONTEND_DIR $LOG_DIR
+            
+            # 移动文件
+            echo "📁 移动文件..."
+            rm -rf $FRONTEND_DIR/dist
+            mv $TEMP_DIR/My-Blog-front-end/dist $FRONTEND_DIR/
+            mv $TEMP_DIR/My-Blog-Backend/target/$JAR_NAME $BACKEND_DIR/
+            rm -rf $TEMP_DIR
+            
+            # 设置权限
+            chmod -R 755 $BACKEND_DIR $FRONTEND_DIR
+            
+            # 检查环境变量
+            echo "🔍 检查环境变量..."
+            if [ -z "$ALIYUN_OSS_ACCESS_KEY_ID" ]; then
+              echo "⚠️ 警告: 未设置 ALIYUN_OSS_ACCESS_KEY_ID 环境变量"
+              echo "请执行: echo 'export ALIYUN_OSS_ACCESS_KEY_ID=xxx' >> /etc/profile && source /etc/profile"
+            fi
+            
+            # 停止旧服务
+            echo "🛑 停止旧服务..."
+            PID=$(pgrep -f "$JAR_NAME" || true)
+            if [ -n "$PID" ]; then
+              kill -15 $PID 2>/dev/null || true
+              sleep 3
+              kill -9 $PID 2>/dev/null || true
+            fi
+            
+            # 启动新服务
+            echo "🚀 启动后端服务..."
+            cd $BACKEND_DIR
+            nohup java -jar $JAR_NAME --spring.profiles.active=prod > $LOG_DIR/app.log 2>&1 &
+            
+            # 等待服务启动
+            echo "⏳ 等待服务启动..."
+            for i in {1..30}; do
+              if curl -s http://localhost:8080/actuator/health > /dev/null 2>&1 || \
+                 netstat -tlnp | grep -q ":8080"; then
+                echo "✅ 后端服务启动成功 (8080端口)"
+                break
+              fi
+              sleep 1
+            done
+            
+            # 检查服务状态
+            if pgrep -f "$JAR_NAME" > /dev/null; then
+              echo "✅ 服务进程运行中"
+              echo "📝 最近10行日志:"
+              tail -n 10 $LOG_DIR/app.log
+            else
+              echo "❌ 服务启动失败"
+              echo "📝 错误日志:"
+              cat $LOG_DIR/app.log | tail -n 20
+              exit 1
+            fi
+            
+            # 重启Nginx
+            echo "🔄 重启Nginx..."
+            nginx -t && nginx -s reload
+            
+            echo "=== 部署完成 ==="
+
+      - name: 部署完成
+        run: echo "🎉 部署成功"
