@@ -5,6 +5,7 @@ import com.xulei.myblogbackend.interceptor.Prefixinterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -25,7 +26,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")  // 拦截所有请求
                 .excludePathPatterns(    // 以下路径不执行Logininterceptor的preHandle方法
                         "/user/login",   // 登录接口
-                        "/user/register",   // 登录接口
+                        "/user/register",   // 注册接口
+                        "/user/public/**",  // 公开用户信息
                         "/article/list",
                         "/article/{id}",
                         "/article/getLog",
@@ -40,5 +42,15 @@ public class WebConfig implements WebMvcConfigurer {
                 .order(0);  // 先执行，但已增加异常处理
     }
 
+    // 配置跨域
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")  // 允许所有来源
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")  // 允许所有请求头
+                .exposedHeaders("token")  // 允许前端读取token响应头
+                .maxAge(3600);
+    }
 
 }

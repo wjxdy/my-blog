@@ -14,6 +14,18 @@
         <result column="article_collection_number" property="articleCollectionNumber" />
     </resultMap>
 
+    <!-- 分页列表查询结果映射（带文章摘要） -->
+    <resultMap id="PageResultMap" type="com.xulei.myblogbackend.entity.Article">
+        <id column="article_id" property="articleId" />
+        <result column="username" property="username" />
+        <result column="article_title" property="articleTitle" />
+        <result column="article_add_time" property="articleAddTime" />
+        <result column="article_context_preview" property="articleContext" />
+        <result column="article_good_number" property="articleGoodNumber" />
+        <result column="article_look_number" property="articleLookNumber" />
+        <result column="article_collection_number" property="articleCollectionNumber" />
+    </resultMap>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         article_id, username, article_title, article_add_time, article_context, article_good_number, article_look_number, article_collection_number
@@ -29,13 +41,25 @@
         a.article_collection_number
     </sql>
 
+    <!-- 分页查询列（带文章内容摘要前200字符） -->
+    <sql id="Page_Column_List">
+        a.article_id,
+        a.username,
+        a.article_title,
+        a.article_add_time,
+        a.article_context as article_context_preview,
+        a.article_good_number,
+        a.article_look_number,
+        a.article_collection_number
+    </sql>
+
     <!-- 替换你原有对应的SQL部分，完整整合非空判断 -->
-    <select id="getArticleInfo" resultMap="BaseResultMap">
+    <select id="getArticleInfo" resultMap="PageResultMap">
         <!-- 1. 绑定标题模糊查询参数：拼接%，避免SQL注入，跨数据库兼容 -->
         <bind name="likeTitle" value="'%' + (titleKeyword == null ? '' : titleKeyword) + '%'"/>
 
         select
-        <include refid="Search_Column_List"/>
+        <include refid="Page_Column_List"/>
         from article as a
         <!-- 用<where>标签替代原有的WHERE关键字：自动处理多余的AND/OR，避免语法错误 -->
         <where>

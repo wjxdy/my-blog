@@ -34,7 +34,11 @@
 <template>
     <div class="edit-container">
         <div class="editor-wrapper">
-            <MdEditor v-model="article.articleContext" style="min-height: 700px; width: 100%;" />
+            <MdEditor 
+                v-model="article.articleContext" 
+                style="min-height: 700px; width: 100%;" 
+                @onUploadImg="onUploadImg"
+            />
         </div>
 
 
@@ -98,6 +102,7 @@ import 'md-editor-v3/lib/style.css';
 import { ElMessage } from 'element-plus';
 import { useRouter, useRoute } from 'vue-router';
 import { getTagListApi } from '@/api/tag';
+import { uploadImageApi } from '@/api/upload';
 const router = useRouter()
 const route = useRoute()
 
@@ -174,6 +179,43 @@ const loadArticleData = async () => {
     }
 }
 
+
+// 图片上传回调
+const onUploadImg = async (files: File[], callback: (urls: string[]) => void) => {
+    const urls: string[] = []
+    
+    for (const file of files) {
+        try {
+            // 验证文件类型
+            if (!file.type.startsWith('image/')) {
+                ElMessage.error(`${file.name} 不是图片文件`)
+                continue
+            }
+            
+            // 验证文件大小 (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                ElMessage.error(`${file.name} 超过5MB限制`)
+                continue
+            }
+            
+            const res = await uploadImageApi(file)
+            if (res.code === 200 && res.data) {
+                urls.push(res.data)
+            } else {
+                ElMessage.error(res.message || `${file.name} 上传失败`)
+            }
+        } catch (error) {
+            console.error('图片上传失败:', error)
+            ElMessage.error(`${file.name} 上传失败`)
+        }
+    }
+    
+    // 回传图片URL列表给编辑器
+    if (urls.length > 0) {
+        callback(urls)
+        ElMessage.success(`成功上传 ${urls.length} 张图片`)
+    }
+}
 
 onMounted(() => {
     loadArticleData()

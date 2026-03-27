@@ -77,10 +77,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Page<Article> page = (Page<Article>)list;
         PageInfoDto<List<Article>> listPageInfoDto = new PageInfoDto<>();
         listPageInfoDto.setPageTotal( page.getTotal());
-        List<Article> dataInfo = page.getResult().stream().map(article -> article.setArticleContext(null))
-                .collect(Collectors.toList());
-
-        listPageInfoDto.setData(dataInfo);
+        // 直接返回结果，articleContext 已在 SQL 中被截取为前200字符
+        listPageInfoDto.setData(page.getResult());
         listPageInfoDto.setCurrentPage(pageInfoDto.getCurrentPage());
 
         return listPageInfoDto;

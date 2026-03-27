@@ -3,6 +3,7 @@ package com.xulei.myblogbackend.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.xulei.myblogbackend.excpetion.BaseException;
 import com.xulei.myblogbackend.dto.RegisterDto;
 import com.xulei.myblogbackend.entity.User;
@@ -103,5 +104,61 @@ public class UserServiceImpl extends ServiceImpl<ReaderMapper, User> implements 
         BeanUtil.copyProperties(userOtherInfo,userInfo);
         log.info("登录vo信息： {}",userInfo);
         return userInfo;
+    }
+    
+    @Override
+    public User updateUserInfo(User user) throws BaseException {
+        if (user == null || user.getUsername() == null) {
+            throw new BaseException("用户信息不能为空");
+        }
+        
+        log.info("更新用户信息, username: {}, name: {}, imgUrl: {}, email: {}, phone: {}, sex: {}", 
+                user.getUsername(), user.getName(), user.getImgUrl(), user.getEmail(), user.getPhone(), user.getSex());
+        
+        // 先查询用户是否存在
+        User existingUser = this.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername()));
+        if (existingUser == null) {
+            throw new BaseException("用户不存在");
+        }
+        
+        // 使用实体对象更新
+        User updateEntity = new User();
+        updateEntity.setId(existingUser.getId()); // 使用ID作为更新条件
+        
+        // 只更新允许修改的字段（区分 null 和空字符串）
+        if (user.getName() != null) {
+            updateEntity.setName(user.getName());
+        }
+        if (user.getImgUrl() != null) {
+            updateEntity.setImgUrl(user.getImgUrl());
+            log.info("更新头像URL: {}", user.getImgUrl());
+        }
+        if (user.getEmail() != null) {
+            updateEntity.setEmail(user.getEmail());
+        }
+        if (user.getSex() != null) {
+            updateEntity.setSex(user.getSex());
+        }
+        if (user.getPhone() != null) {
+            updateEntity.setPhone(user.getPhone());
+        }
+        
+        // 执行更新
+        boolean update = this.updateById(updateEntity);
+        log.info("更新结果: {}", update);
+        
+        if (!update) {
+            throw new BaseException("更新用户信息失败");
+        }
+        
+        // 返回更新后的用户信息
+        User updatedUser = this.getById(existingUser.getId());
+        log.info("更新后的用户信息, imgUrl: {}", updatedUser.getImgUrl());
+        return updatedUser;
+    }
+    
+    @Override
+    public User getUserByUsername(String username) {
+        return this.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
     }
 }

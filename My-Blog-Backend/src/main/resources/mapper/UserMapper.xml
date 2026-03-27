@@ -6,20 +6,18 @@
     <resultMap id="BaseResultMap" type="com.xulei.myblogbackend.entity.User">
         <id column="id" property="id" />
         <result column="name" property="name" />
-
         <result column="sex" property="sex" />
-        <result column="w_address" property="wAddress" />
-        <result column="h_address" property="hAddress" />
         <result column="phone" property="phone" />
         <result column="email" property="email" />
         <result column="username" property="username" />
         <result column="password" property="password" />
         <result column="register_time" property="registerTime" />
+        <result column="img_url" property="imgUrl" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, category_id, sex, w_address, h_address, phone, email, create_time, notes, username, password, register_time
+        id, name, sex, phone, email, username, password, register_time, img_url
     </sql>
 
 </mapper>

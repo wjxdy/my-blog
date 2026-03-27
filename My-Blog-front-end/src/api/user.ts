@@ -50,3 +50,40 @@ export const userRegisterApi = (params: { username: string; password: string; na
     data: params,
   });
 };
+
+// 定义用户信息类型
+export interface UserInfo {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  phone: string;
+  sex: number;
+  imgUrl: string;
+  registerTime: string;
+}
+
+// 获取当前登录用户信息
+export const getUserInfoApi = (): Promise<ApiResponse<UserInfo>> => {
+  return request({
+    url: "/user/info",
+    method: "get",
+  });
+};
+
+// 获取博主信息（公开接口，不需要登录）
+export const getPublicUserInfoApi = (): Promise<ApiResponse<UserInfo>> => {
+  return request({
+    url: "/user/public/info",
+    method: "get",
+  });
+};
+
+// 更新用户信息
+export const updateUserInfoApi = (params: Partial<UserInfo>): Promise<ApiResponse<UserInfo>> => {
+  return request({
+    url: "/user/info",
+    method: "put",
+    data: params,
+  });
+};

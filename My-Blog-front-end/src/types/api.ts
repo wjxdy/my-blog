@@ -23,7 +23,7 @@ export interface Article {
     articleTitle: string;
     username: string;
     articleAddTime: string;
-    articleIntro: string;
+    articleContext: string;  // 文章内容摘要（后端已截取前200字符）
 }
 
 // 定义分页数据接口

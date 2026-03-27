@@ -22,7 +22,7 @@ export const useUserInfoStore = defineStore('userInfo', {
         },
         //登录信息
         pageInfo: <PageInfo>{
-          pageSize: 5,
+          pageSize: 3,
           pageTotal: 0,
           currentPage: 1,
           condition: '',

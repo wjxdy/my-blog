@@ -14,9 +14,10 @@ request.interceptors.request.use(function (config) {
     
     if(userInfo){
       let token= JSON.parse(userInfo).token
-      
       config.headers.token=token
-      
+      console.log('请求拦截器 - 设置token, URL:', config.url)
+    } else {
+      console.log('请求拦截器 - 未找到userInfo, URL:', config.url)
     }
     return config;
   }, function (error) {
@@ -32,16 +33,20 @@ request.interceptors.response.use(
     return response.data
   },
   (error) => { //失败回调
-    if(error.response.status===401){
-        
-        ElMessage.error('登录身份信息失效，请重新登录')
+    // 只有访问需要登录的接口时401才跳转登录页
+    const needAuthPaths = ['/user/info', '/upload', '/article/add', '/article/update']
+    const requestPath = error.config?.url || ''
+    const isNeedAuth = needAuthPaths.some(path => requestPath.includes(path))
+    
+    if(error.response?.status === 401 && isNeedAuth){
+        ElMessage.error('请先登录')
         localStorage.removeItem('userInfo');
         router.push('/login')
-    }else{
-      
+    } else if (error.response?.status === 401) {
+        // 游客访问，不跳转，只返回错误
+        console.log('游客访问无401:', requestPath)
     }
     
-
     return Promise.reject(error)
   }
 )

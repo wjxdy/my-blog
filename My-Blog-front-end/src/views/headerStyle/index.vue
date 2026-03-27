@@ -113,12 +113,6 @@
     /* 适度间距，替代固定 padding */
 }
 
-/* 标签样式 */
-.tag-item {
-    margin-bottom: 10px;
-    text-align: center;
-}
-
 /* 退出按钮区域：不被挤压，固定大小 */
 .navbar>div:last-child {
     flex-shrink: 0;
@@ -126,63 +120,19 @@
     margin-left: 10px;
 }
 
-/* 新增：TagFrom 样式 - 独立一行 + 搜索框正下方精准对齐 */
-.TagFrom {
-    /* 1. 上下间距：与导航栏分隔，避免紧贴 */
-    margin: 0px 50% 0px 20% ;
-    /* 2. 宽度匹配：与搜索框内输入框宽度一致，实现左右对齐 */
-    width: 40%;
-    /* 3. 标签水平居中排列，保持美观 */
-    text-align: center;
-    /* 5. 可选：限制最大宽度，大屏下不显得过宽 */
-    max-width: 600px;
-    /* 6. 可选：盒子模型优化，避免padding撑宽 */
-    box-sizing: border-box;
-}
-
-/* 新增：标签项间距优化，避免重叠拥挤 */
-.TagFrom .el-tag {
-    margin: 0 5px 5px 0;
+/* 设置按钮样式 */
+.settings-btn {
+    flex-shrink: 0;
 }
 </style>
 
 <template>
     <nav class="navbar">
         <div class="logo">
-            <img src="../../assets/myHeaderlogo/IMG_1787.jpeg" alt="logo">
-            <span>{{ sign !== null ? userInfoStore.loginData.name :"" }}</span>
-            
+            <span>XL Blog</span>
         </div>
         <ul class="nav-menu">
             <li><router-link to="/homePage">首页</router-link></li>
-            <li>
-                <el-tooltip placement="bottom" effect="light" :show-arrow="true"
-                    :popper-style="{ width: '250px', padding: '10px' }" 
-                    >
-                    <!-- 触发元素 -->
-                    <a href="javascript:;" class="tag-trigger">标签</a>
-
-                    <!-- 自定义 content 插槽（嵌入分类选择） -->
-                    <template #content>
-                        <div class="tag-selector">
-                            <!-- 简单分类列表（可替换为 el-select/自定义组件） -->
-                             <el-row justify="space-evenly">
-                                
-                                <div class="tag-item" v-for="item in userInfoStore.tagList" :key="item.articleTagId">
-                                    <el-col :span="6" :gutter="20" class="tag-title">
-                                        <el-button round @click="handletagSelect(item)">{{ item.articleTagName }}</el-button>   
-                                    </el-col>                     
-                                </div>
-                                <el-col :span="6" :gutter="20">
-                                    <el-button @click="addTag()" round>
-                                        <el-icon ><Plus /></el-icon>
-                                    </el-button>
-                                </el-col>
-                            </el-row>   
-                        </div>
-                    </template>
-                </el-tooltip>
-            </li>
             <li><a href="#">作品</a></li>
             <li><a href="#" @click="selectTool()">工具</a></li>
             <li><a href="#">订阅</a></li>
@@ -191,12 +141,7 @@
         <div class="search-box">
             <el-input v-model="userInfoStore.pageInfo.condition" size="large" placeholder="输入搜索内容"
                  clearable />
-            <!-- 2. 用于显示已创建的 Tag 标签 -->
-            
-
             <button @click="getArticlePage()">搜索</button>
-            
-            
         </div>
         <div class="button-row">
             <el-tooltip class="box-item" effect="dark" content="创作" placement="bottom">
@@ -207,25 +152,27 @@
                 </el-button>
             </el-tooltip>
         </div>
+        <!-- 设置按钮 -->
+        <div class="settings-btn">
+            <el-tooltip class="box-item" effect="dark" content="设置" placement="bottom">
+                <el-button @click="$router.push({ path: '/settings' })" circle size="large">
+                    <el-icon size="20">
+                        <Setting />
+                    </el-icon>
+                </el-button>
+            </el-tooltip>
+        </div>
         <div>
-            <el-button round @click="exit()" style="margin-right:200px ;">{{ loginStatus }}</el-button>
+            <el-button round @click="exit()">{{ loginStatus }}</el-button>
         </div>
     </nav>
-    <div class="TagFrom">
-        <el-tag v-for="tag in userInfoStore.pageInfo.tags" @close="handleClose(tag)" :key="tag.articleTagId" closable :type="tag.articleTagId === '' ? 'success' : 'info'">
-            {{ tag.articleTagName }}
-        </el-tag>
-    </div>
-
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus'
 import {  useRouter } from 'vue-router'
 import { useUserInfoStore } from "@/stores/counter";
-import { getTagListApi } from '@/api/tag';
 import { getArticlePageApi } from "@/api/article";
-import type {  Tag } from "@/types/api";
 
 const selectTool = () => {
     userInfoStore.pageInfo = {
@@ -239,12 +186,7 @@ const selectTool = () => {
     }
     getArticlePage();
 };
-const handleClose = (tag: Tag) => {
-    const index = userInfoStore.pageInfo.tags.indexOf(tag);
-    if (index > -1) {
-        userInfoStore.pageInfo.tags.splice(index, 1);
-    }
-};
+
 const getArticlePage = async () => {
     try {
 
@@ -263,29 +205,8 @@ const getArticlePage = async () => {
 }
 const userInfoStore = useUserInfoStore();
 
-const addTag = () => {
-
-    userInfoStore.headerCenterDialogVisible = true;
-}
-
-
-const handletagSelect = (item: Tag) => {
-    console.log('Selected tag:', item);
-    // 在这里处理分类选择逻辑，例如导航到分类页面
-    userInfoStore.pageInfo.tags.push(item);
-};
-
-
-const loadTagList =async() => {
-    // 调用tagList接口  
-    const res = await getTagListApi()
-    userInfoStore.tagList = res.data;
-};
-
 const loginStatus = ref('退出登录')
 const router = useRouter()
-
-
 
 const sign = ref(localStorage.getItem('userInfo'))
 const loadLoginInfo = () => { 
@@ -328,12 +249,7 @@ const exit = () => {
      }
 }
 
-
-
-
 onMounted(() => { 
     loadLoginInfo()
-    loadTagList()
-
 })
 </script>
