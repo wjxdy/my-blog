@@ -76,6 +76,17 @@ jobs:
             # 创建目录
             mkdir -p $BACKEND_DIR $FRONTEND_DIR $LOG_DIR
             
+            # 创建数据库配置文件
+            echo "🔧 创建数据库配置..."
+            cat > $BACKEND_DIR/application.yml << 'DBCONFIG'
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/blog?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: xulei030626
+DBCONFIG
+            
             # 移动文件
             echo "📁 移动文件..."
             rm -rf $FRONTEND_DIR/dist
@@ -86,26 +97,16 @@ jobs:
             # 设置权限
             chmod -R 755 $BACKEND_DIR $FRONTEND_DIR
             
-            # 检查环境变量
-            echo "🔍 检查环境变量..."
-            if [ -z "$ALIYUN_OSS_ACCESS_KEY_ID" ]; then
-              echo "⚠️ 警告: 未设置 ALIYUN_OSS_ACCESS_KEY_ID 环境变量"
-              echo "请执行: echo 'export ALIYUN_OSS_ACCESS_KEY_ID=xxx' >> /etc/profile && source /etc/profile"
-            fi
-            
             # 停止旧服务
             echo "🛑 停止旧服务..."
-            PID=$(pgrep -f "$JAR_NAME" || true)
-            if [ -n "$PID" ]; then
-              kill -15 $PID 2>/dev/null || true
-              sleep 3
-              kill -9 $PID 2>/dev/null || true
-            fi
+            pkill -9 -f "java -jar" 2>/dev/null || true
             
             # 启动新服务
             echo "🚀 启动后端服务..."
             cd $BACKEND_DIR
-            nohup java -jar $JAR_NAME --spring.profiles.active=prod > $LOG_DIR/app.log 2>&1 &
+            export ALIYUN_OSS_ACCESS_KEY_ID=${{ secrets.ALIYUN_OSS_ACCESS_KEY_ID }}
+            export ALIYUN_OSS_ACCESS_KEY_SECRET=${{ secrets.ALIYUN_OSS_ACCESS_KEY_SECRET }}
+            nohup java -jar $JAR_NAME > $LOG_DIR/app.log 2>&1 &
             
             # 等待服务启动
             echo "⏳ 等待服务启动..."
