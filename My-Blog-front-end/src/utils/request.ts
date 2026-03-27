@@ -7,17 +7,60 @@ const request = axios.create({
   baseURL: '/api',
   timeout: 600000
 })
+
+// 检查token是否过期
+const isTokenExpired = (token: string): boolean => {
+    try {
+        // JWT token 格式: header.payload.signature
+        const parts = token.split('.')
+        if (parts.length !== 3) return true
+        
+        // 解析 payload (Base64)
+        const payload = JSON.parse(atob(parts[1]))
+        
+        // 检查 exp (过期时间戳，秒级)
+        if (payload.exp) {
+            const now = Math.floor(Date.now() / 1000)
+            return payload.exp < now
+        }
+        return false
+    } catch (e) {
+        console.error('Token解析失败:', e)
+        return true
+    }
+}
+
+// 清除登录状态
+const clearLoginState = () => {
+    localStorage.removeItem('userInfo')
+    ElMessage.error('登录已过期，请重新登录')
+    router.push('/login')
+}
+
 request.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
-    let userInfo= localStorage.getItem('userInfo')
+    let userInfo = localStorage.getItem('userInfo')
     
-    
-    if(userInfo){
-      let token= JSON.parse(userInfo).token
-      config.headers.token=token
-      console.log('请求拦截器 - 设置token, URL:', config.url)
+    if (userInfo) {
+        try {
+            const parsed = JSON.parse(userInfo)
+            const token = parsed.token
+            
+            // 检查token是否过期
+            if (token && isTokenExpired(token)) {
+                console.log('请求拦截器 - token已过期')
+                clearLoginState()
+                return Promise.reject(new Error('Token已过期'))
+            }
+            
+            config.headers.token = token
+            console.log('请求拦截器 - 设置token, URL:', config.url)
+        } catch (e) {
+            console.error('解析userInfo失败:', e)
+            localStorage.removeItem('userInfo')
+        }
     } else {
-      console.log('请求拦截器 - 未找到userInfo, URL:', config.url)
+        console.log('请求拦截器 - 未找到userInfo, URL:', config.url)
     }
     return config;
   }, function (error) {
@@ -33,18 +76,14 @@ request.interceptors.response.use(
     return response.data
   },
   (error) => { //失败回调
-    // 只有访问需要登录的接口时401才跳转登录页
-    const needAuthPaths = ['/user/info', '/upload', '/article/add', '/article/update']
     const requestPath = error.config?.url || ''
-    const isNeedAuth = needAuthPaths.some(path => requestPath.includes(path))
     
-    if(error.response?.status === 401 && isNeedAuth){
-        ElMessage.error('请先登录')
-        localStorage.removeItem('userInfo');
+    // 处理401未授权（token无效或过期）
+    if (error.response?.status === 401) {
+        // 清除登录状态
+        localStorage.removeItem('userInfo')
+        ElMessage.error('登录已过期，请重新登录')
         router.push('/login')
-    } else if (error.response?.status === 401) {
-        // 游客访问，不跳转，只返回错误
-        console.log('游客访问无401:', requestPath)
     }
     
     return Promise.reject(error)

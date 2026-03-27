@@ -21,6 +21,9 @@ export const useUserInfoStore = defineStore('userInfo', {
             username:''
         },
         //登录信息
+        blogSettings: {
+            githubUrl: 'https://github.com/wjxdy' // 默认作品链接
+        },
         pageInfo: <PageInfo>{
           pageSize: 3,
           pageTotal: 0,

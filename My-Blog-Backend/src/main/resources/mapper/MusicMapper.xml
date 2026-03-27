@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xulei.myblogbackend.mapper.MusicMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xulei.myblogbackend.entity.Music">
+        <id column="music_id" property="musicId" />
+        <result column="music_name" property="musicName" />
+        <result column="music_url" property="musicUrl" />
+        <result column="music_artist" property="musicArtist" />
+        <result column="sort_order" property="sortOrder" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        music_id, music_name, music_url, music_artist, sort_order, create_time
+    </sql>
+
+    <!-- 查询所有音乐，按排序顺序 -->
+    <select id="selectAllOrderBySort" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM music
+        ORDER BY sort_order ASC, create_time ASC
+    </select>
+
+</mapper>

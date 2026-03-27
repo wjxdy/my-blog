@@ -38,6 +38,9 @@
     position: sticky;
     top: 20px;
     align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 /* ==================== 手机端响应式设计 ==================== */
@@ -136,7 +139,7 @@
 /* 博客标题样式 */
 .blog-title {
     color: #2c3e50;
-    margin: 0 0 15px 0;
+    margin: 0 0 8px 0;
     cursor: pointer;
     font-size: 1.5rem;
     font-weight: 700;
@@ -152,10 +155,22 @@
 .blog-meta {
     color: #6c757d;
     font-size: 0.95rem;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
     display: flex;
     gap: 25px;
     align-items: center;
+}
+
+/* 博客内容链接样式 - 可点击跳转 */
+.blog-content-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    cursor: pointer;
+}
+
+.blog-content-link:hover {
+    color: inherit;
 }
 
 /* 博客内容预览样式 */
@@ -179,21 +194,45 @@
     overflow: hidden;
 }
 
-/* 阅读全文链接样式 - 灰色极简风格 */
-.read-more {
-    text-align: left;
-    padding: 10px 0 0;
+/* 文章标签样式 - 类似美团 */
+.article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 12px;
 }
 
-.read-more a {
-    color: #999;
-    text-decoration: none;
+.article-tag {
     font-size: 13px;
-    font-weight: 400;
+    color: #666;
+    text-decoration: none;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 2px;
+    line-height: 1.4;
+    transition: all 0.2s ease;
 }
 
-.read-more a:hover {
-    color: #666;
+.article-tag:hover {
+    border-bottom-color: #666;
+}
+
+/* 博客标题悬停下横线效果 - 美团风格 */
+.blog-title {
+    color: #2c3e50;
+    margin: 0 0 8px 0;
+    cursor: pointer;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    line-height: 1.4;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 4px;
+}
+
+.blog-title:hover {
+    border-bottom-color: #333;
 }
 
 /* 分割线样式 */
@@ -203,11 +242,88 @@ hr {
     margin: 15px 0;
 }
 
+/* 音乐播放器样式 */
+.music-section {
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+}
 
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 
+.music-player-card {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
 
+.music-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
+.music-icon {
+    font-size: 24px;
+    color: #666;
+    animation: rotate 3s linear infinite paused;
+}
 
+.music-icon.rotating {
+    animation-play-state: running;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.music-detail {
+    flex: 1;
+    min-width: 0;
+}
+
+.music-name {
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+
+.music-artist {
+    font-size: 12px;
+    color: #999;
+    margin-top: 2px;
+}
+
+.music-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.play-btn {
+    background: #333;
+    color: #fff;
+    border: none;
+}
+
+.play-btn:hover {
+    background: #555;
+}
 </style>
 <template>
     <div class="parent">
@@ -228,42 +344,189 @@ hr {
                     <span>发布时间：{{ formatDate(article.articleAddTime) }}</span>
                 </div>
 
-                <!-- 渲染博客内容摘要 -->
-                <div class="blog-content-preview">
-                    <MdPreview 
-                        :editorId="'preview-' + article.articleId" 
-                        :modelValue="getPreviewContent(article.articleContext)" 
-                    />
-                    <div class="read-more">
-                        <router-link :to="`/article/${article.articleId}`">阅读全文 →</router-link>
+                <!-- 渲染博客内容摘要 - 点击可跳转 -->
+                <router-link :to="`/article/${article.articleId}`" class="blog-content-link">
+                    <div class="blog-content-preview">
+                        <MdPreview 
+                            :editorId="'preview-' + article.articleId" 
+                            :modelValue="getPreviewContent(article.articleContext)" 
+                        />
                     </div>
+                </router-link>
+                
+                <!-- 文章标签 -->
+                <div class="article-tags" v-if="article.tags && article.tags.length > 0">
+                    <router-link 
+                        v-for="(tag, tagIndex) in article.tags" 
+                        :key="tag?.articleTagId || tagIndex"
+                        :to="`/tag/${tag?.articleTagId}`"
+                        class="article-tag"
+                    >
+                        {{ tag?.articleTagName || '未知标签' }}
+                    </router-link>
                 </div>
-
-
             </div>
             <div class="demo-pagination-block">
                 <el-pagination v-model:current-page="userInfoStore.pageInfo.currentPage" v-model:page-size="userInfoStore.pageInfo.pageSize"
-                    :page-sizes="[5, 10, 20, 50]" size="large" layout="total, sizes, prev, pager, next, jumper"
+                    :page-sizes="[3, 5, 10, 20, 50]" size="large" layout="total, sizes, prev, pager, next, jumper"
                     :total="userInfoStore.pageInfo.pageTotal" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
             </div>
         </div>
         <div class="r-side">
             <tags-cloud />
+            <!-- 音乐播放器 -->
+            <div class="music-section" v-if="musicList.length > 0">
+                <div class="music-player-card">
+                    <div class="music-info">
+                        <el-icon class="music-icon" :class="{ rotating: isPlaying }"><Headset /></el-icon>
+                        <div class="music-detail">
+                            <div class="music-name" :title="currentMusic?.musicName">
+                                {{ currentMusic?.musicName }}
+                            </div>
+                            <div v-if="currentMusic?.musicArtist" class="music-artist">
+                                {{ currentMusic.musicArtist }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="music-controls">
+                        <el-button 
+                            circle 
+                            size="small" 
+                            @click="prevMusic"
+                            :disabled="musicList.length <= 1"
+                        >
+                            <el-icon><ArrowLeft /></el-icon>
+                        </el-button>
+                        
+                        <el-button 
+                            circle 
+                            size="default" 
+                            @click="togglePlay"
+                            class="play-btn"
+                        >
+                            <el-icon v-if="isPlaying"><VideoPause /></el-icon>
+                            <el-icon v-else><VideoPlay /></el-icon>
+                        </el-button>
+                        
+                        <el-button 
+                            circle 
+                            size="small" 
+                            @click="nextMusic"
+                            :disabled="musicList.length <= 1"
+                        >
+                            <el-icon><ArrowRight /></el-icon>
+                        </el-button>
+                    </div>
+                    
+                    <audio 
+                        ref="audioRef" 
+                        :src="currentMusic?.musicUrl" 
+                        @ended="onMusicEnded"
+                        @error="onMusicError"
+                        style="display: none;"
+                    ></audio>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import { getArticlePageApi } from "@/api/article";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { ElMessage } from 'element-plus';
 import ProfileCard from './profile-card.vue'
 import TagsCloud from './tags-cloud.vue'
 import priceChartView from './priceChart.vue'
 import { formatDate } from "@/utils/dateUtils";
+import { Headset, VideoPlay, VideoPause, ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
+import { getMusicListApi } from '@/api/music'
 import { useUserInfoStore } from "@/stores/counter";
 import { MdPreview } from 'md-editor-v3';
 import 'md-editor-v3/lib/preview.css';
 const userInfoStore = useUserInfoStore();
+
+// ========== 音乐播放器 ==========
+interface Music {
+    musicId: string;
+    musicName: string;
+    musicUrl: string;
+    musicArtist: string;
+    sortOrder: number;
+}
+
+const musicList = ref<Music[]>([])
+const currentIndex = ref(0)
+const isPlaying = ref(false)
+const audioRef = ref<HTMLAudioElement>()
+
+const currentMusic = computed(() => {
+    return musicList.value[currentIndex.value] || null
+})
+
+// 加载音乐列表
+const loadMusicList = async () => {
+    try {
+        const res: any = await getMusicListApi()
+        console.log('音乐列表API响应:', res)
+        // 支持数字和字符串类型的code
+        const code = res.code
+        if ((code === 200 || code === '200') && res.data) {
+            musicList.value = res.data
+            console.log('音乐列表加载成功:', musicList.value)
+        } else {
+            console.log('音乐列表加载失败，code:', code, 'data:', res.data)
+        }
+    } catch (error) {
+        console.error('加载音乐列表失败:', error)
+    }
+}
+
+// 播放/暂停
+const togglePlay = () => {
+    if (!audioRef.value) return
+    
+    if (isPlaying.value) {
+        audioRef.value.pause()
+        isPlaying.value = false
+    } else {
+        audioRef.value.play().then(() => {
+            isPlaying.value = true
+        }).catch(err => {
+            console.error('播放失败:', err)
+            ElMessage.error('音乐播放失败')
+        })
+    }
+}
+
+// 上一首
+const prevMusic = () => {
+    if (musicList.value.length <= 1) return
+    currentIndex.value = (currentIndex.value - 1 + musicList.value.length) % musicList.value.length
+    isPlaying.value = false
+    setTimeout(() => togglePlay(), 100)
+}
+
+// 下一首
+const nextMusic = () => {
+    if (musicList.value.length <= 1) return
+    currentIndex.value = (currentIndex.value + 1) % musicList.value.length
+    isPlaying.value = false
+    setTimeout(() => togglePlay(), 100)
+}
+
+// 音乐播放结束
+const onMusicEnded = () => {
+    nextMusic()
+}
+
+// 音乐加载错误
+const onMusicError = () => {
+    console.error('音乐加载错误:', currentMusic.value?.musicUrl)
+    ElMessage.error('音乐加载失败')
+    isPlaying.value = false
+}
+// ========== 音乐播放器结束 ==========
     
 const handleSizeChange = (val: number) => {
     userInfoStore.pageInfo.pageSize = val;
@@ -297,8 +560,16 @@ const getArticlePage = async () => {
         const result = await getArticlePageApi(useUserInfoStore().pageInfo);
 
         if (result.code == 200) {
-            userInfoStore.ArticleList = result.data.data;
+            // 处理文章数据，过滤掉 null 的标签
+            const articles = result.data.data.map((article: any) => {
+                if (article.tags) {
+                    article.tags = article.tags.filter((tag: any) => tag && tag.articleTagId && tag.articleTagName)
+                }
+                return article
+            })
+            userInfoStore.ArticleList = articles;
             userInfoStore.pageInfo.pageTotal = result.data.pageTotal;
+            console.log('文章列表:', articles)
         } else {
             ElMessage.error("查询失败");
         }
@@ -310,6 +581,7 @@ const getArticlePage = async () => {
 
 onMounted(() => {
     getArticlePage();
+    loadMusicList();
 });
 
 </script>

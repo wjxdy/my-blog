@@ -6,6 +6,7 @@ import blogEditView from '@/views/blogEdit/index.vue'
 import loginView from "@/views/login/index.vue";
 import newsView from "@/views/mapInfo/index.vue";
 import settingsView from "@/views/settings/index.vue";
+import archiveView from "@/views/archive/index.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -34,6 +35,11 @@ const router = createRouter({
           path: 'settings',
           name: 'settings',
           component: settingsView
+        },
+        {
+          path: 'archive',
+          name: 'archive',
+          component: archiveView
         }
       ]
       

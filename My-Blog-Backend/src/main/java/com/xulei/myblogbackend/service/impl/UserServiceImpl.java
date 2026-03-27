@@ -112,8 +112,8 @@ public class UserServiceImpl extends ServiceImpl<ReaderMapper, User> implements 
             throw new BaseException("用户信息不能为空");
         }
         
-        log.info("更新用户信息, username: {}, name: {}, imgUrl: {}, email: {}, phone: {}, sex: {}", 
-                user.getUsername(), user.getName(), user.getImgUrl(), user.getEmail(), user.getPhone(), user.getSex());
+        log.info("更新用户信息, username: {}, name: {}, bio: {}, githubUrl: {}", 
+                user.getUsername(), user.getName(), user.getBio(), user.getGithubUrl());
         
         // 先查询用户是否存在
         User existingUser = this.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername()));
@@ -121,30 +121,38 @@ public class UserServiceImpl extends ServiceImpl<ReaderMapper, User> implements 
             throw new BaseException("用户不存在");
         }
         
-        // 使用实体对象更新
-        User updateEntity = new User();
-        updateEntity.setId(existingUser.getId()); // 使用ID作为更新条件
+        // 使用 LambdaUpdateWrapper 更新指定字段
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(User::getId, existingUser.getId());
         
         // 只更新允许修改的字段（区分 null 和空字符串）
         if (user.getName() != null) {
-            updateEntity.setName(user.getName());
+            updateWrapper.set(User::getName, user.getName());
         }
         if (user.getImgUrl() != null) {
-            updateEntity.setImgUrl(user.getImgUrl());
+            updateWrapper.set(User::getImgUrl, user.getImgUrl());
             log.info("更新头像URL: {}", user.getImgUrl());
         }
         if (user.getEmail() != null) {
-            updateEntity.setEmail(user.getEmail());
+            updateWrapper.set(User::getEmail, user.getEmail());
         }
         if (user.getSex() != null) {
-            updateEntity.setSex(user.getSex());
+            updateWrapper.set(User::getSex, user.getSex());
         }
         if (user.getPhone() != null) {
-            updateEntity.setPhone(user.getPhone());
+            updateWrapper.set(User::getPhone, user.getPhone());
+        }
+        if (user.getBio() != null) {
+            updateWrapper.set(User::getBio, user.getBio());
+            log.info("更新bio: {}", user.getBio());
+        }
+        if (user.getGithubUrl() != null) {
+            updateWrapper.set(User::getGithubUrl, user.getGithubUrl());
+            log.info("更新githubUrl: {}", user.getGithubUrl());
         }
         
         // 执行更新
-        boolean update = this.updateById(updateEntity);
+        boolean update = this.update(updateWrapper);
         log.info("更新结果: {}", update);
         
         if (!update) {
@@ -153,7 +161,7 @@ public class UserServiceImpl extends ServiceImpl<ReaderMapper, User> implements 
         
         // 返回更新后的用户信息
         User updatedUser = this.getById(existingUser.getId());
-        log.info("更新后的用户信息, imgUrl: {}", updatedUser.getImgUrl());
+        log.info("更新后的用户信息, bio: {}, githubUrl: {}", updatedUser.getBio(), updatedUser.getGithubUrl());
         return updatedUser;
     }
     

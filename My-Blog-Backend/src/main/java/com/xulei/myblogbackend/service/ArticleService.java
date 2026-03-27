@@ -6,6 +6,7 @@ import com.xulei.myblogbackend.dto.ArticleDto;
 import com.xulei.myblogbackend.dto.PageInfoDto;
 import com.xulei.myblogbackend.entity.Article;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xulei.myblogbackend.vo.ArticleVo;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public interface ArticleService extends IService<Article> {
 
     void deleteArticleById(String articleId) throws BaseException;
 
-    PageInfoDto<List<Article>> getArticlePage(PageInfoDto pageInfoDto);
+    PageInfoDto<List<ArticleVo>> getArticlePage(PageInfoDto pageInfoDto);
 
     void addAeticle(ArticleDto articleDto) throws BaseException;
 

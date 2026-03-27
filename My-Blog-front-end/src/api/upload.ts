@@ -36,3 +36,21 @@ export const uploadAvatarApi = (file: File): Promise<ApiResponse> => {
         }
     })
 }
+
+/**
+ * 通用文件上传（支持音乐等）
+ * @param file 文件
+ * @returns 文件URL
+ */
+export const uploadFileApi = (file: File): Promise<ApiResponse> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return request({
+        url: '/upload/file',
+        method: 'post',
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+}

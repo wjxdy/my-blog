@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -50,5 +51,15 @@ public class ArticleTagListServiceImpl extends ServiceImpl<ArticleTagListMapper,
         } catch (Exception e) {
             throw new BaseException("文章删除失败");
         }
+    }
+    
+    @Override
+    public List<String> getTagIdsByArticleId(String articleId) {
+        LambdaQueryWrapper<ArticleTagList> queryWrapper = new LambdaQueryWrapper<ArticleTagList>()
+                .eq(ArticleTagList::getArticleId, articleId);
+        List<ArticleTagList> tagList = this.list(queryWrapper);
+        return tagList.stream()
+                .map(ArticleTagList::getArticleTagId)
+                .collect(Collectors.toList());
     }
 }

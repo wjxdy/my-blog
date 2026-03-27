@@ -114,6 +114,126 @@
     justify-content: center;
     z-index: 1000;
 }
+
+.admin-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tag-management {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.add-tag-row {
+    display: flex;
+    gap: 10px;
+}
+
+.tag-input {
+    flex: 1;
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag-item {
+    cursor: pointer;
+}
+
+/* 音乐管理样式 */
+.music-management {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.add-music-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.music-input {
+    width: 180px;
+}
+
+.music-upload {
+    display: inline-block;
+}
+
+.empty-music-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 30px;
+    color: #909399;
+    font-size: 14px;
+    background: #f5f7fa;
+    border-radius: 8px;
+    border: 1px dashed #dcdfe6;
+}
+
+.music-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.music-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background: #f5f7fa;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.music-item:hover {
+    background: #e9ecef;
+}
+
+.music-index {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #409EFF;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 12px;
+}
+
+.music-name {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+}
+
+.music-artist {
+    font-size: 13px;
+    color: #999;
+}
 </style>
 
 <template>
@@ -197,6 +317,134 @@
                         <el-radio :label="2">保密</el-radio>
                     </el-radio-group>
                 </div>
+
+                <div class="form-item">
+                    <label class="form-label">个人简介</label>
+                    <el-input
+                        v-model="userForm.bio"
+                        type="textarea"
+                        :rows="4"
+                        placeholder="介绍一下自己..."
+                        size="large"
+                        class="form-input"
+                        maxlength="200"
+                        show-word-limit
+                    />
+                    <p class="form-hint">最多200字，将显示在首页个人信息卡片中</p>
+                </div>
+
+                <!-- 只有 xuleixulei 可以设置作品链接 -->
+                <div class="form-item" v-if="isAdmin">
+                    <label class="form-label">作品链接 (GitHub)</label>
+                    <el-input
+                        v-model="userForm.githubUrl"
+                        placeholder="https://github.com/username"
+                        size="large"
+                        class="form-input"
+                    />
+                    <p class="form-hint">设置后导航栏"作品"将跳转到此链接（仅管理员可设置）</p>
+                </div>
+
+                <!-- 只有 xuleixulei 可以管理标签 -->
+                <div class="admin-section" v-if="isAdmin">
+                    <div class="section-title">
+                        <el-icon><Collection /></el-icon>
+                        标签管理
+                    </div>
+                    
+                    <div class="tag-management">
+                        <div class="add-tag-row">
+                            <el-input
+                                v-model="newTagName"
+                                placeholder="输入新标签名称"
+                                size="large"
+                                class="tag-input"
+                                @keyup.enter="addTag"
+                            />
+                            <el-button type="primary" size="large" :loading="addingTag" @click="addTag">
+                                添加标签
+                            </el-button>
+                        </div>
+                        
+                        <div class="tag-list">
+                            <el-tag
+                                v-for="tag in tagList"
+                                :key="tag.articleTagId"
+                                class="tag-item"
+                                closable
+                                size="large"
+                                @close="deleteTag(tag)"
+                            >
+                                {{ tag.articleTagName }}
+                            </el-tag>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 只有 xuleixulei 可以管理音乐 -->
+                <div class="admin-section" v-if="isAdmin">
+                    <div class="section-title">
+                        <el-icon><Headset /></el-icon>
+                        背景音乐管理 ({{ musicList.length }}/5)
+                    </div>
+                    
+                    <div class="music-management">
+                        <div class="add-music-row">
+                            <el-input
+                                v-model="newMusicName"
+                                placeholder="歌曲名称"
+                                size="large"
+                                class="music-input"
+                            />
+                            <el-input
+                                v-model="newMusicArtist"
+                                placeholder="歌手（可选）"
+                                size="large"
+                                class="music-input"
+                            />
+                            <el-upload
+                                action="#"
+                                :auto-upload="false"
+                                :on-change="handleMusicSelect"
+                                :show-file-list="false"
+                                accept="audio/mp3,audio/mpeg"
+                                class="music-upload"
+                            >
+                                <el-button size="large" :loading="uploadingMusic">
+                                    {{ musicFile ? musicFile.name : '选择MP3' }}
+                                </el-button>
+                            </el-upload>
+                            <el-button type="primary" size="large" :loading="addingMusic" @click="addMusic" :disabled="!newMusicName || !musicFile || musicList.length >= 5">
+                                上传
+                            </el-button>
+                        </div>
+                        <p class="form-hint" v-if="musicList.length >= 5" style="color: #f56c6c;">已达到最大数量限制（5首）</p>
+                        
+                        <div class="music-list" v-if="musicList.length > 0">
+                            <div
+                                v-for="(music, index) in musicList"
+                                :key="music.musicId"
+                                class="music-item"
+                            >
+                                <span class="music-index">{{ index + 1 }}</span>
+                                <span class="music-name">{{ music.musicName }}</span>
+                                <span v-if="music.musicArtist" class="music-artist">- {{ music.musicArtist }}</span>
+                                <el-button
+                                    type="danger"
+                                    link
+                                    size="small"
+                                    @click="deleteMusic(music)"
+                                >
+                                    删除
+                                </el-button>
+                            </div>
+                        </div>
+                        <div v-else class="empty-music-hint">
+                            <el-icon><Headset /></el-icon>
+                            <span>暂无背景音乐，请上传 MP3 文件</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 操作按钮 -->
@@ -211,10 +459,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Upload } from '@element-plus/icons-vue'
+import { ref, onMounted, computed } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { Upload, Collection, Headset } from '@element-plus/icons-vue'
 import { getUserInfoApi, updateUserInfoApi, type UserInfo } from '@/api/user'
+import { getTagListApi, addTagApi, deleteTagApi } from '@/api/tag'
+import { getMusicListApi, uploadMusicApi, deleteMusicApi } from '@/api/music'
+import { uploadImageApi, uploadFileApi } from '@/api/upload'
 import { uploadAvatarApi } from '@/api/upload'
 import { useUserInfoStore } from '@/stores/counter'
 
@@ -223,6 +474,17 @@ const userInfoStore = useUserInfoStore()
 const loading = ref(false)
 const saving = ref(false)
 const uploading = ref(false)
+const addingTag = ref(false)
+const newTagName = ref('')
+const tagList = ref<any[]>([])
+
+// 音乐管理
+const addingMusic = ref(false)
+const uploadingMusic = ref(false)
+const newMusicName = ref('')
+const newMusicArtist = ref('')
+const musicFile = ref<File | null>(null)
+const musicList = ref<any[]>([])
 
 // 用户表单数据
 const userForm = ref<Partial<UserInfo>>({
@@ -231,11 +493,18 @@ const userForm = ref<Partial<UserInfo>>({
     email: '',
     phone: '',
     sex: 2,
-    imgUrl: ''
+    imgUrl: '',
+    bio: '',
+    githubUrl: ''
 })
 
 // 原始数据，用于重置
 const originalData = ref<Partial<UserInfo>>({})
+
+// 判断是否是管理员（xuleixulei）
+const isAdmin = computed(() => {
+    return userForm.value.username === 'xuleixulei'
+})
 
 // 加载用户信息
 const loadUserInfo = async () => {
@@ -246,6 +515,10 @@ const loadUserInfo = async () => {
         if ((res.code == 200 || res.code == '200') && res.data) {
             userForm.value = { ...res.data }
             originalData.value = { ...res.data }
+            // 加载作品链接到 store
+            if (res.data.githubUrl) {
+                userInfoStore.blogSettings.githubUrl = res.data.githubUrl
+            }
             console.log('加载用户信息成功, imgUrl:', res.data.imgUrl)
         } else {
             ElMessage.error(res.message || '获取用户信息失败')
@@ -321,13 +594,19 @@ const saveSettings = async () => {
 
     saving.value = true
     try {
-        const res = await updateUserInfoApi({
+        const params: any = {
             name: userForm.value.name,
             email: userForm.value.email,
             phone: userForm.value.phone,
             sex: userForm.value.sex,
-            imgUrl: userForm.value.imgUrl
-        })
+            imgUrl: userForm.value.imgUrl,
+            bio: userForm.value.bio
+        }
+        // 只有管理员可以保存 githubUrl
+        if (isAdmin.value && userForm.value.githubUrl) {
+            params.githubUrl = userForm.value.githubUrl
+        }
+        const res = await updateUserInfoApi(params)
         if (res.code == 200 || res.code == '200') {
             ElMessage.success('保存成功')
             if (res.data) {
@@ -335,6 +614,10 @@ const saveSettings = async () => {
                 originalData.value = { ...res.data }
                 // 更新全局store中的用户信息
                 userInfoStore.loginData.name = res.data.name
+                // 更新作品链接
+                if (res.data.githubUrl) {
+                    userInfoStore.blogSettings.githubUrl = res.data.githubUrl
+                }
             }
         } else {
             ElMessage.error(res.message || '保存失败')
@@ -347,7 +630,194 @@ const saveSettings = async () => {
     }
 }
 
+// 加载标签列表
+const loadTagList = async () => {
+    try {
+        const res = await getTagListApi()
+        if (res.code == 200 || res.code == '200') {
+            tagList.value = res.data || []
+        }
+    } catch (error) {
+        console.error('加载标签列表失败:', error)
+    }
+}
+
+// 添加标签
+const addTag = async () => {
+    if (!newTagName.value.trim()) {
+        ElMessage.error('标签名称不能为空')
+        return
+    }
+    addingTag.value = true
+    try {
+        const res = await addTagApi(newTagName.value.trim())
+        if (res.code == 200 || res.code == '200') {
+            ElMessage.success('添加成功')
+            tagList.value.push(res.data)
+            newTagName.value = ''
+        } else {
+            ElMessage.error(res.message || '添加失败')
+        }
+    } catch (error) {
+        ElMessage.error('添加失败')
+    } finally {
+        addingTag.value = false
+    }
+}
+
+// 删除标签
+const deleteTag = async (tag: any) => {
+    try {
+        await ElMessageBox.confirm(
+            `确定要删除标签 "${tag.articleTagName}" 吗？`,
+            '确认删除',
+            {
+                confirmButtonText: '删除',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }
+        )
+        const res = await deleteTagApi(tag.articleTagId)
+        if (res.code == 200 || res.code == '200') {
+            ElMessage.success('删除成功')
+            tagList.value = tagList.value.filter(t => t.articleTagId !== tag.articleTagId)
+        } else {
+            ElMessage.error(res.message || '删除失败')
+        }
+    } catch (error) {
+        if (error !== 'cancel') {
+            ElMessage.error('删除失败')
+        }
+    }
+}
+
+// 加载音乐列表
+const loadMusicList = async () => {
+    try {
+        const res = await getMusicListApi()
+        if (res.code == 200 || res.code == '200') {
+            musicList.value = res.data || []
+        }
+    } catch (error) {
+        console.error('加载音乐列表失败:', error)
+    }
+}
+
+// 选择音乐文件
+const handleMusicSelect = (file: any) => {
+    const rawFile = file.raw
+    if (!rawFile) return
+
+    // 验证文件类型
+    if (!rawFile.type.startsWith('audio/') && !rawFile.name.endsWith('.mp3')) {
+        ElMessage.error('请上传MP3格式的音乐文件')
+        return
+    }
+
+    // 验证文件大小 (50MB)
+    if (rawFile.size > 50 * 1024 * 1024) {
+        ElMessage.error('音乐文件大小不能超过50MB')
+        return
+    }
+
+    musicFile.value = rawFile
+    // 自动提取文件名作为歌曲名
+    if (!newMusicName.value) {
+        const fileName = rawFile.name.replace('.mp3', '').replace('.MP3', '')
+        newMusicName.value = fileName
+    }
+}
+
+// 添加音乐
+const addMusic = async () => {
+    if (!newMusicName.value.trim() || !musicFile.value) {
+        ElMessage.error('请填写歌曲名称并选择文件')
+        return
+    }
+    
+    if (musicList.value.length >= 5) {
+        ElMessage.error('最多只能上传5首歌曲')
+        return
+    }
+
+    addingMusic.value = true
+    uploadingMusic.value = true
+    
+    try {
+        // 1. 上传音乐文件到OSS
+        const uploadRes = await uploadFileApi(musicFile.value)
+        
+        if (uploadRes.code == 200 || uploadRes.code == '200') {
+            const musicUrl = uploadRes.data
+            
+            // 2. 保存音乐信息到数据库
+            const saveRes = await uploadMusicApi({
+                musicName: newMusicName.value.trim(),
+                musicUrl: musicUrl,
+                musicArtist: newMusicArtist.value.trim() || undefined
+            })
+            
+            if (saveRes.code == 200 || saveRes.code == '200') {
+                ElMessage.success('上传成功')
+                musicList.value.push(saveRes.data)
+                newMusicName.value = ''
+                newMusicArtist.value = ''
+                musicFile.value = null
+            } else {
+                ElMessage.error(saveRes.message || '保存失败')
+            }
+        } else {
+            ElMessage.error(uploadRes.message || '上传失败')
+        }
+    } catch (error) {
+        console.error('上传音乐失败:', error)
+        ElMessage.error('上传失败')
+    } finally {
+        addingMusic.value = false
+        uploadingMusic.value = false
+    }
+}
+
+// 删除音乐
+const deleteMusic = async (music: any) => {
+    console.log('点击删除音乐:', music)
+    try {
+        const result = await ElMessageBox.confirm(
+            `确定要删除歌曲 "${music.musicName}" 吗？`,
+            '确认删除',
+            {
+                confirmButtonText: '删除',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }
+        )
+        console.log('确认删除结果:', result)
+        
+        // 检查是否有登录信息
+        const userInfo = localStorage.getItem('userInfo')
+        console.log('删除音乐 - userInfo:', userInfo ? '存在' : '不存在')
+        
+        const res = await deleteMusicApi(music.musicId)
+        console.log('删除音乐响应:', res)
+        if (res.code == 200 || res.code == '200') {
+            ElMessage.success('删除成功')
+            musicList.value = musicList.value.filter(m => m.musicId !== music.musicId)
+        } else {
+            ElMessage.error(res.message || '删除失败')
+        }
+    } catch (error: any) {
+        console.log('删除音乐错误:', error)
+        if (error === 'cancel' || error?.message === 'cancel') {
+            console.log('用户取消删除')
+        } else {
+            ElMessage.error('删除失败')
+        }
+    }
+}
+
 onMounted(() => {
     loadUserInfo()
+    loadTagList()
+    loadMusicList()
 })
 </script>

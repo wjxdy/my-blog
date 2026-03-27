@@ -15,8 +15,17 @@
             <div class="article-content">
                 <MdPreview :editorId="id" :modelValue="article.articleContext" />
             </div>
-            <!-- 更多按钮 -->
-            <div class="divider">
+            <!-- 分割线 -->
+            <div class="divider"></div>
+            <!-- 底部区域：标签在左，更多按钮在右 -->
+            <div class="article-footer">
+                <!-- 文章标签 -->
+                <div class="article-tags" v-if="article.articleTags && article.articleTags.length > 0">
+                    <span v-for="(tagId, index) in article.articleTags" :key="tagId" class="article-tag">
+                        {{ getTagNameById(tagId) }}
+                    </span>
+                </div>
+                <!-- 更多按钮 -->
                 <div class="other">
                     <el-popover placement="bottom" title="" width="200" trigger="hover">
                         <!-- 弹出框内容 -->
@@ -70,6 +79,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { MdPreview, MdCatalog } from 'md-editor-v3';
 import 'md-editor-v3/lib/preview.css';
 import { getArticleApi, deleteArticleApi } from "@/api/article";
+import { getTagListApi } from "@/api/tag";
 import { formatDate } from "@/utils/dateUtils";
 
 const id = 'preview-only';
@@ -79,6 +89,27 @@ const route = useRoute()
 const router = useRouter()
 
 const articleId = route.params.id // 从URL中获取文章ID（如 /article/1 中的 1
+
+// 标签列表
+const tagList = ref<{ articleTagId: string; articleTagName: string }[]>([])
+
+// 根据标签ID获取标签名称
+const getTagNameById = (tagId: string): string => {
+    const tag = tagList.value.find(t => t.articleTagId === tagId)
+    return tag ? tag.articleTagName : tagId
+}
+
+// 加载标签列表
+const loadTagList = async () => {
+    try {
+        const res = await getTagListApi()
+        if (res.code == 200 && res.data) {
+            tagList.value = res.data
+        }
+    } catch (error) {
+        console.error('加载标签列表失败:', error)
+    }
+}
 
 // 定义文章类型
 interface Article {
@@ -91,6 +122,7 @@ interface Article {
     articleGoodNumber: number | null;
     articleLookNumber: number | null;
     articleCollectionNumber: number | null;
+    articleTags?: string[];
 }
 
 // 存储文章完整数据
@@ -139,8 +171,14 @@ const deleteArticleById = async () => {
             }
         )
 
+        // 检查登录状态
+        const userInfo = localStorage.getItem('userInfo')
+        console.log('删除文章 - 登录状态:', userInfo ? '已登录' : '未登录')
+        
         // 用户确认后执行删除操作
+        console.log('删除文章 - articleId:', articleId)
         const result = await deleteArticleApi(articleId as string)
+        console.log('删除文章 - 响应:', result)
 
         if (result.code == 200) {
             ElMessage.success("删除成功")
@@ -154,9 +192,10 @@ const deleteArticleById = async () => {
     }
 }
 
-// 页面加载时获取文章详情
-onMounted(() => {
-    getArticleDetail()
+// 页面加载时获取文章详情和标签列表
+onMounted(async () => {
+    await loadTagList()
+    await getArticleDetail()
 })
 </script>
 
@@ -168,13 +207,19 @@ onMounted(() => {
     /* 水平方向靠右对齐 */
 }
 
+/* 底部区域：标签在左，按钮在右 */
+.article-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+}
+
 /* 分隔线样式 */
 .divider {
     margin-top: 60px;
     border-top: 1px solid #e9ecef;
     /* 更柔和的灰色 */
-    padding-top: 20px;
-    /* 顶部留出间距 */
 }
 
 /* 页面整体布局 */
@@ -261,6 +306,22 @@ onMounted(() => {
 /* 文章内容样式优化 */
 .article-content {
     width: 100%;
+}
+
+/* 文章标签样式 - 简洁无框 */
+.article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 30px 0 20px;
+}
+
+.article-tag {
+    font-size: 13px;
+    color: #666;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 2px;
+    line-height: 1.4;
 }
 
 /* 右侧固定目录样式 */

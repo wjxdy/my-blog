@@ -19,5 +19,10 @@ public interface ArticleTagListService extends IService<ArticleTagList> {
     void addTagList(List<ArticleTagList> articleTagList) throws BaseException;
 
     void deleteTagList(String articleId) throws BaseException;
+    
+    /**
+     * 根据文章ID获取标签ID列表
+     */
+    List<String> getTagIdsByArticleId(String articleId);
 
 }

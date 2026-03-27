@@ -268,11 +268,10 @@
             <span>XL Blog</span>
         </div>
         <ul class="nav-menu">
-            <li><router-link to="/homePage">首页</router-link></li>
-            <li><a href="#">作品</a></li>
+            <li><router-link to="/homePage" @click="resetTags()">首页</router-link></li>
+            <li><router-link to="/archive">归档</router-link></li>
+            <li><a :href="userInfoStore.blogSettings.githubUrl || 'https://github.com/wjxdy'" target="_blank" rel="noopener noreferrer">作品</a></li>
             <li><a href="#" @click="selectTool()">工具</a></li>
-            <li><a href="#">订阅</a></li>
-            <li><a href="#">关于</a></li>
         </ul>
         <div class="search-box">
             <el-input v-model="userInfoStore.pageInfo.condition" size="large" placeholder="输入搜索内容"
@@ -320,7 +319,9 @@
         <button class="mobile-menu-close" @click="showMobileMenu = false">✕</button>
         
         <ul class="mobile-nav-menu">
-            <li><router-link to="/homePage" @click="showMobileMenu = false">首页</router-link></li>
+            <li><router-link to="/homePage" @click="resetTags(); showMobileMenu = false">首页</router-link></li>
+            <li><router-link to="/archive" @click="showMobileMenu = false">归档</router-link></li>
+            <li><a :href="userInfoStore.blogSettings.githubUrl || 'https://github.com/wjxdy'" target="_blank" rel="noopener noreferrer" @click="showMobileMenu = false">作品</a></li>
             <li><a href="#" @click.prevent="selectTool(); showMobileMenu = false">工具</a></li>
         </ul>
         
@@ -362,18 +363,25 @@ const handleMobileExit = () => {
     exit();
 };
 
+// 工具标签ID（需要替换为实际的工具标签ID）
+const TOOL_TAG_ID = '699da7cd5f3340449cbf2977c5263037'
+
+// 重置标签（点击首页时使用）
+const resetTags = () => {
+    userInfoStore.pageInfo.tags = []
+    userInfoStore.pageInfo.currentPage = 1
+    userInfoStore.pageInfo.condition = ''
+    getArticlePage()
+}
+
 const selectTool = () => {
-    userInfoStore.pageInfo = {
-        pageSize: 5,
-        pageTotal: 0,
-        currentPage: 1,
-        condition: '',
-        tags: [
-            { articleTagId: '699da7cd5f3340449cbf2977c5263037', articleTagName: '工具' }
-        ]
-    }
-    getArticlePage();
-};
+    // 清除其他标签，只保留工具标签
+    userInfoStore.pageInfo.tags = [
+        { articleTagId: TOOL_TAG_ID, articleTagName: '工具' }
+    ]
+    userInfoStore.pageInfo.currentPage = 1
+    getArticlePage()
+}
 
 const getArticlePage = async () => {
     try {

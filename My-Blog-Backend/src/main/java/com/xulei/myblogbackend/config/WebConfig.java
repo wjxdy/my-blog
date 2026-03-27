@@ -34,7 +34,9 @@ public class WebConfig implements WebMvcConfigurer {
                         "/tag/**",
                         "/email/**",
                         "/binance/**",
-                        "/news"
+                        "/news",
+                        "/music",
+                        "/music/count"
                 ).order(1);
 
         registry.addInterceptor(prefixinterceptor)

@@ -81,4 +81,30 @@ public class UploadController {
             return Result.fail("头像上传失败: " + e.getMessage());
         }
     }
+    
+    /**
+     * 通用文件上传接口（支持音乐等文件）
+     *
+     * @param file 文件
+     * @return 文件访问URL
+     */
+    @PostMapping("/file")
+    public Result<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return Result.fail("请选择要上传的文件");
+        }
+        
+        // 验证文件大小（50MB）
+        if (file.getSize() > 50 * 1024 * 1024) {
+            return Result.fail("文件大小不能超过50MB");
+        }
+        
+        try {
+            String fileUrl = ossService.uploadFile(file, "files/");
+            return Result.success(fileUrl);
+        } catch (Exception e) {
+            log.error("文件上传失败", e);
+            return Result.fail("文件上传失败: " + e.getMessage());
+        }
+    }
 }

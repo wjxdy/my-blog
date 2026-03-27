@@ -61,6 +61,8 @@ export interface UserInfo {
   sex: number;
   imgUrl: string;
   registerTime: string;
+  bio?: string;
+  githubUrl?: string;
 }
 
 // 获取当前登录用户信息

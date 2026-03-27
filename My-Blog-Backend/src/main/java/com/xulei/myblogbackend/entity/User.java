@@ -71,4 +71,15 @@ public class User implements Serializable {
      */
     @TableField("img_url")
     private String imgUrl;
+
+    /**
+     * 个人简介
+     */
+    private String bio;
+
+    /**
+     * GitHub作品链接
+     */
+    @TableField("github_url")
+    private String githubUrl;
 }

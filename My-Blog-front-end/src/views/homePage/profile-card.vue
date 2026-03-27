@@ -72,6 +72,18 @@
     color: #333;
 }
 
+.profile-bio {
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+    text-align: left;
+    background: #f8f9fa;
+    border-radius: 6px;
+    word-break: break-word;
+}
+
 .stat-item {
     text-align: center;
 }
@@ -112,6 +124,9 @@
                 <span class="stat-value">{{ tagList.length }}</span>
                 <span class="stat-label">标签</span>
             </div>
+        </div>
+        <div class="profile-bio" v-if="userInfo?.bio">
+            {{ userInfo.bio }}
         </div>
         <div class="profile-github">
             <a href="https://github.com/wjxdy/my-blog" target="_blank" rel="noopener noreferrer">

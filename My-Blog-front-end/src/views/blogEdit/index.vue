@@ -286,13 +286,18 @@ const uploadAndInsertCustomImage = async () => {
 
 const dialogVisible = ref(false)
 
-const tagList = ref();
+const tagList = ref<any[]>([]);
 
-const loadTagList = () => {
-    // 调用tagList接口  
-    getTagListApi().then(res => {
-        tagList.value = res.data
-    })
+const loadTagList = async () => {
+    try {
+        const res = await getTagListApi()
+        if (res.code == 200 && res.data) {
+            tagList.value = res.data
+            console.log('标签列表加载成功:', tagList.value)
+        }
+    } catch (error) {
+        console.error('加载标签列表失败:', error)
+    }
 };
 
 
@@ -313,15 +318,18 @@ const articleUpdateData = ref();
 const handleSubmit = async () => {
     try {
         let result;
-        const articleUpdateDto = ref({
-            article: { ...articleUpdateData.value },
-            articleTags: [article.value.articleTags.join(',')]
-        });
-        console.log(articleUpdateDto);
         
         if (articleId) {
             // 编辑现有文章
-            result = await updateArticleApi(articleUpdateDto.value)
+            const articleUpdateDto = {
+                article: { 
+                    ...article.value,
+                    articleTags: undefined // 文章对象不包含标签字段
+                },
+                articleTags: article.value.articleTags || []
+            };
+            console.log('更新文章数据:', articleUpdateDto);
+            result = await updateArticleApi(articleUpdateDto)
         } else {
             // 新增文章
             result = await addArticleApi(article.value)
@@ -344,8 +352,20 @@ const loadArticleData = async () => {
         try {
             const result = await getArticleApi(articleId as string)
             if (result.code == 200) {
-                article.value = result.data
-                articleUpdateData.value = result.data
+                // 处理标签数据，确保是字符串数组且过滤空值
+                let tags: string[] = []
+                if (result.data.articleTags && Array.isArray(result.data.articleTags)) {
+                    tags = result.data.articleTags.filter((tag: any) => tag && tag !== '')
+                }
+                
+                // 确保 articleId 被正确设置
+                article.value = {
+                    ...result.data,
+                    articleId: articleId as string, // 确保ID正确
+                    articleTags: tags
+                }
+                console.log('加载文章数据:', article.value)
+                console.log('文章标签:', tags)
             } else {
                 ElMessage.error("加载文章失败")
             }
@@ -398,9 +418,10 @@ const onUploadImg = async (files: File[], callback: (urls: string[]) => void) =>
     }
 }
 
-onMounted(() => {
-    loadArticleData()
-    loadTagList()
+onMounted(async () => {
+    // 先加载标签列表，确保标签数据准备好后再加载文章
+    await loadTagList()
+    await loadArticleData()
 })
 
 </script>

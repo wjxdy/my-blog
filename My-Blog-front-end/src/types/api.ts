@@ -19,11 +19,15 @@ export interface Tag {
 
 // 定义文章类型接口
 export interface Article {
-    articleId: number;
+    articleId: string;
     articleTitle: string;
     username: string;
     articleAddTime: string;
     articleContext: string;  // 文章内容摘要（后端已截取前200字符）
+    articleGoodNumber?: number;
+    articleLookNumber?: number;
+    articleCollectionNumber?: number;
+    tags?: Tag[];  // 文章标签列表
 }
 
 // 定义分页数据接口

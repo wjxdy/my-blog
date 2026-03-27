@@ -82,5 +82,58 @@
             </if>
         </where>
     </select>
+    
+    <!-- 文章列表VO结果映射 -->
+    <resultMap id="ArticleVoResultMap" type="com.xulei.myblogbackend.vo.ArticleVo">
+        <id column="article_id" property="articleId" />
+        <result column="username" property="username" />
+        <result column="article_title" property="articleTitle" />
+        <result column="article_add_time" property="articleAddTime" />
+        <result column="article_context_preview" property="articleContext" />
+        <result column="article_good_number" property="articleGoodNumber" />
+        <result column="article_look_number" property="articleLookNumber" />
+        <result column="article_collection_number" property="articleCollectionNumber" />
+        <collection property="tags" ofType="com.xulei.myblogbackend.vo.ArticleTagVo" notNullColumn="tag_id">
+            <result column="tag_id" property="articleTagId" />
+            <result column="tag_name" property="articleTagName" />
+        </collection>
+    </resultMap>
+    
+    <!-- 查询文章列表（带标签信息） -->
+    <select id="getArticleListWithTags" resultMap="ArticleVoResultMap">
+        <bind name="likeTitle" value="'%' + (titleKeyword == null ? '' : titleKeyword) + '%'"/>
+        
+        SELECT
+            a.article_id,
+            a.username,
+            a.article_title,
+            a.article_add_time,
+            a.article_context as article_context_preview,
+            a.article_good_number,
+            a.article_look_number,
+            a.article_collection_number,
+            at.article_tag_id as tag_id,
+            at.article_tag_name as tag_name
+        FROM article a
+        LEFT JOIN article_tag_list atl ON a.article_id = atl.article_id
+        LEFT JOIN article_tag at ON atl.article_tag_id = at.article_tag_id
+        <where>
+            <if test="tagIds != null and tagIds.size() > 0">
+                AND a.article_id IN (
+                    SELECT atl2.article_id
+                    FROM article_tag_list atl2
+                    WHERE atl2.article_tag_id IN
+                    <foreach collection="tagIds" item="tagId" open="(" separator="," close=")">
+                        #{tagId}
+                    </foreach>
+                    GROUP BY atl2.article_id
+                )
+            </if>
+            <if test="titleKeyword != null and titleKeyword.trim() != ''">
+                AND a.article_title LIKE #{likeTitle}
+            </if>
+        </where>
+        ORDER BY a.article_add_time DESC
+    </select>
 
 </mapper>

@@ -7,11 +7,15 @@ import com.xulei.myblogbackend.dto.PageInfoDto;
 import com.xulei.myblogbackend.entity.Article;
 import com.xulei.myblogbackend.entity.Result;
 import com.xulei.myblogbackend.service.ArticleService;
+import com.xulei.myblogbackend.service.ArticleTagListService;
+import com.xulei.myblogbackend.vo.ArticleVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @Slf4j
 @RequestMapping("/article")
@@ -19,6 +23,9 @@ import java.util.List;
 public class ArticleController {
     @Autowired
     private ArticleService articleService;
+    
+    @Autowired
+    private ArticleTagListService articleTagListService;
 
     @GetMapping("/getLog")
     public Result getLog(){
@@ -46,16 +53,37 @@ public class ArticleController {
 
 
     @PostMapping("/list")
-    public Result<PageInfoDto<List<Article>>> getArticlePage(@RequestBody PageInfoDto pageInfoDto){
-        PageInfoDto<List<Article>> listPageInfoDto = articleService.getArticlePage(pageInfoDto);
+    public Result<PageInfoDto<List<ArticleVo>>> getArticlePage(@RequestBody PageInfoDto pageInfoDto){
+        PageInfoDto<List<ArticleVo>> listPageInfoDto = articleService.getArticlePage(pageInfoDto);
         return Result.success(listPageInfoDto);
     }
 
 
     @GetMapping("/{id}")
-    public Result<Article> getArticleById(@PathVariable("id") String id){
+    public Result<Map<String, Object>> getArticleById(@PathVariable("id") String id){
         Article article = articleService.getById(id);
-        return Result.success(article);
+        if (article == null) {
+            return Result.fail("文章不存在");
+        }
+        
+        // 获取文章的标签列表
+        List<String> tagIds = articleTagListService.getTagIdsByArticleId(id);
+        
+        // 构建返回数据
+        Map<String, Object> result = new HashMap<>();
+        result.put("articleId", article.getArticleId());
+        result.put("username", article.getUsername());
+        result.put("articleTitle", article.getArticleTitle());
+        result.put("articleIntro", article.getArticleIntro());
+        result.put("articleAddTime", article.getArticleAddTime());
+        result.put("articleUpdateTime", article.getArticleUpdateTime());
+        result.put("articleContext", article.getArticleContext());
+        result.put("articleGoodNumber", article.getArticleGoodNumber());
+        result.put("articleLookNumber", article.getArticleLookNumber());
+        result.put("articleCollectionNumber", article.getArticleCollectionNumber());
+        result.put("articleTags", tagIds);
+        
+        return Result.success(result);
     }
 
 
